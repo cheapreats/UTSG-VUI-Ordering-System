@@ -2,14 +2,14 @@ import type { NextPage } from "next"
 import Link from "next/link"
 import Head from "next/head"
 import Image from "next/image"
-import { SmallText } from "@cheapreats/react-ui"
+import { Button } from "@cheapreats/react-ui"
 
 const Home: NextPage = () => {
   return (
     <div>
-      <SmallText>
+      <Button>
         Welcome to Home
-      </SmallText>
+      </Button>
       <Link href="/test">To Test</Link>
     </div>
   );
