@@ -1,6 +1,7 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import type { NextPage } from "next"
+import Link from "next/link"
+import Head from "next/head"
+import Image from "next/image"
 import { SmallText } from "@cheapreats/react-ui"
 
 const Home: NextPage = () => {
@@ -9,8 +10,9 @@ const Home: NextPage = () => {
       <SmallText>
         Welcome to Home
       </SmallText>
+      <Link href="/test">To Test</Link>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
