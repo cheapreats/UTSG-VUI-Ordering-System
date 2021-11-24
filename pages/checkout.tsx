@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -14,19 +15,52 @@ declare var process: {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK);
 
 export const Checkout: React.VFC = () => {
+  const [clientSecret, setClientSecret] = useState("");
+
+  // TODO: fetch this somehow
   const price: Price = {
     amount: 420,
     currency: "cad",
   };
 
-  const cs = getCustomerSecret(price).then((res) => {
-    return res.data.client_secret;
-  });
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    const price2: Price = {
+      amount: price.amount,
+      currency: price.currency,
+    };
+    getCustomerSecret(price2).then((body) => {
+      setClientSecret(body.client_secret);
+    });
+  }, [price.amount, price.currency]);
 
-  console.log("cs:", cs);
+  const appearance = {
+    theme: "stripe" as const,
+    // Example
+    // variables: {
+    //   fontFamily: "Sohne, system-ui, sans-serif",
+    //   fontWeightNormal: "500",
+    //   borderRadius: "8px",
+    //   colorBackground: "#0A2540",
+    //   colorPrimary: "#EFC078",
+    //   colorPrimaryText: "#1A1B25",
+    //   colorText: "white",
+    //   colorTextSecondary: "white",
+    //   colorTextPlaceholder: "#727F96",
+    //   colorIconTab: "white",
+    //   colorLogo: "dark",
+    // },
+    // rules: {
+    //   ".Input, .Block": {
+    //     backgroundColor: "transparent",
+    //     border: "1.5px solid var(--colorPrimary)",
+    //   },
+    // },
+  };
 
   const options = {
-    clientSecret: cs,
+    clientSecret,
+    appearance,
   };
 
   return (
@@ -34,9 +68,11 @@ export const Checkout: React.VFC = () => {
       <button>
         <Link href="/">Back to home</Link>
       </button>
-      <Elements stripe={stripePromise} options={options}>
-        <CheckoutForm />
-      </Elements>
+      {clientSecret && (
+        <Elements stripe={stripePromise} options={options}>
+          <CheckoutForm />
+        </Elements>
+      )}
     </>
   );
 };

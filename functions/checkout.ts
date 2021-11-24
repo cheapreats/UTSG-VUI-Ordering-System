@@ -1,12 +1,12 @@
 import qs from "qs";
 import axios from "axios";
 
-interface Price {
+export interface Price {
   amount: number;
   currency: string;
 }
 
-export const getCustomerSecret = async (price: Price) => {
+export const getCustomerSecret = async (price: Price): Promise<any> => {
   const url = "https://api.stripe.com/v1/payment_intents";
   const headers = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -18,6 +18,6 @@ export const getCustomerSecret = async (price: Price) => {
   const response = await axios.post<any>(url, formattedParam, {
     headers: headers,
   });
-  console.log(response);
-  return response;
+  // console.log(response);
+  return response.data;
 };
