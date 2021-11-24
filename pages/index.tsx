@@ -7,10 +7,8 @@ import { Button } from "@cheapreats/react-ui"
 const Home: NextPage = () => {
   return (
     <div>
-      <Button>
-        Welcome to Home
-      </Button>
       <Link href="/test">To Test</Link>
+      <Link href="/landing">To Landing</Link>
     </div>
   );
 };
