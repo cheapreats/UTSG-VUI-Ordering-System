@@ -29,3 +29,5 @@ export const Checkout = (): React.ReactElement => {
     </>
   );
 };
+
+export default Checkout;
