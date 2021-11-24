@@ -15,20 +15,22 @@ export const CheckoutForm = (): React.ReactElement => {
   ) => {
     event.preventDefault();
 
+    console.log("Submitted!");
+
     if (!stripe || !elements) {
       return;
     }
 
-    const result = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: "",
-      },
-    });
+    // const result = await stripe.confirmPayment({
+    //   elements,
+    //   confirmParams: {
+    //     return_url: "",
+    //   },
+    // });
 
-    if (result.error) {
-      console.log(result.error.message);
-    }
+    // if (result.error) {
+    //   console.log(result.error.message);
+    // }
   };
 
   return (

@@ -22,7 +22,9 @@ export const Checkout = (): React.ReactElement => {
 
   return (
     <>
-      <Link href="/">Back to home</Link>
+      <button>
+        <Link href="/">Back to home</Link>
+      </button>
       <Elements stripe={stripePromise} options={options}>
         <CheckoutForm />
       </Elements>
