@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@stripe/react-stripe-js": "^1.6.0",
-    "@stripe/stripe-js": "^1.21.1",
     "@cheapreats/react-ui": "file:cheapreats-react-ui-2.4.39.tgz",
     "@cheapreats/ts-sdk": "^1.13.26",
+    "@stripe/react-stripe-js": "^1.6.0",
+    "@stripe/stripe-js": "^1.21.1",
+    "@types/qs": "^6.9.7",
     "axios": "^0.23.0",
     "next": "12.0.4",
+    "qs": "^6.10.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "styled-components": "^5.3.3"
