@@ -118,6 +118,7 @@ const Landing: NextPage = () => {
 
     //TODO: Use Voiceflow API
     let res: string = "Okay.";
+    speak(res);
 
     // let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
     newHighlightedStrings.push(highlightifyString(true, res));
@@ -136,6 +137,26 @@ const Landing: NextPage = () => {
       getResponse(transcript);
     }
     setIsWaiting(!isWaiting);
+  }
+
+  const synth = window.speechSynthesis;
+
+  const speak = (text: string) => {
+    //Check if speaking
+    if (synth.speaking) {
+      console.error('Already speaking');
+      return;
+    }
+    if (text != '') {
+      const speakText = new SpeechSynthesisUtterance(text);
+      speakText.onend = e => {
+        console.log('Done speaking');
+      }
+      speakText.onerror = e => {
+        console.log('Something went wrong');
+      }
+      synth.speak(speakText);
+    }
   }
 
   return (
