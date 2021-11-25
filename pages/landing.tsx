@@ -81,15 +81,20 @@ const Landing: NextPage = () => {
   }
 
   const highlightifyString = (fromBot: boolean, text: string):HighlightedString => {
-    let txtAlign:string = 'left';
-    if (fromBot) txtAlign = 'left';
+    let txtAlign:string = 'right';
+    if (fromBot){
+      txtAlign = 'left';
+      text = 'Bot:\n' + text;
+    } else {
+      text = 'You:\n' + text;
+    }
 
     let margin_left:string = 'auto'; 
     let margin_right:string = '0';
     if (fromBot) {
       margin_left = '0'; 
       margin_right = 'auto';
-    };
+    }
 
     return {
       text: text,
@@ -107,12 +112,12 @@ const Landing: NextPage = () => {
   }
 
   const getResponse = (requestText: string):void => {
-    //TODO: Use Voiceflow API
     let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
     newHighlightedStrings.push(highlightifyString(false, requestText));
     setHighlightedStrings(newHighlightedStrings);
 
-    let res: string = "I don't care.";
+    //TODO: Use Voiceflow API
+    let res: string = "Okay.";
 
     // let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
     newHighlightedStrings.push(highlightifyString(true, res));
@@ -148,14 +153,8 @@ const Landing: NextPage = () => {
   );
 };
 
-const InvisibleDiv = styled.div`
-height: 35vh; 
-overflow: hidden; 
-overflow-y: scroll;
-`;
-
 const ScrollingList = styled.div`
-height: 35vh; 
+height: 48vh; 
 overflow: hidden; 
 overflow-y: scroll;
 `;
@@ -174,12 +173,13 @@ display: table-cell;
 `;
 
 const LandingPage = styled.div`
-width: 50%;
+width: 60%;
+height: 60%;
 color: #fff;
 background: #eee;
 padding: 1rem;
 border-radius: 5px;
-min-height: 300px;
+min-height: 400px;
 margin-left: auto;
 margin-right: auto;
 `;
