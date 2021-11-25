@@ -45,10 +45,9 @@ export const CheckoutForm = (): React.ReactElement => {
 };
 
 const Form = styled.form`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const Button = styled.button`

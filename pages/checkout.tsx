@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutForm } from "../components/CheckoutForm";
+import { OrderSummary } from "../components/OrderSummary";
 import { Price, getCustomerSecret } from "../functions/checkout";
 
 declare var process: {
@@ -70,6 +71,7 @@ export const Checkout: React.VFC = () => {
       <button>
         <Link href="/">Back to home</Link>
       </button>
+      <OrderSummary/>
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />
