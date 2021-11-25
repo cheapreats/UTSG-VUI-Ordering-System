@@ -25,37 +25,39 @@ export const Checkout: React.VFC = () => {
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
-    const price2: Price = {
-      amount: price.amount,
-      currency: price.currency,
+    const price2 = {
+      amount: 420,
+      currency: "eur",
+      "automatic_payment_methods[enabled]": true,
     };
     getCustomerSecret(price2).then((body) => {
       setClientSecret(body.client_secret);
     });
-  }, [price.amount, price.currency]);
+  }, []);
 
   const appearance = {
     theme: "stripe" as const,
     // Example
-    // variables: {
-    //   fontFamily: "Sohne, system-ui, sans-serif",
-    //   fontWeightNormal: "500",
-    //   borderRadius: "8px",
-    //   colorBackground: "#0A2540",
-    //   colorPrimary: "#EFC078",
-    //   colorPrimaryText: "#1A1B25",
-    //   colorText: "white",
-    //   colorTextSecondary: "white",
-    //   colorTextPlaceholder: "#727F96",
-    //   colorIconTab: "white",
-    //   colorLogo: "dark",
-    // },
-    // rules: {
-    //   ".Input, .Block": {
-    //     backgroundColor: "transparent",
-    //     border: "1.5px solid var(--colorPrimary)",
-    //   },
-    // },
+    variables: {
+      // outerWidth: "500px",
+      // fontFamily: "Sohne, system-ui, sans-serif",
+      // fontWeightNormal: "500",
+      // borderRadius: "8px",
+      // colorBackground: "#0A2540",
+      // colorPrimary: "#EFC078",
+      // colorPrimaryText: "#1A1B25",
+      // colorText: "white",
+      // colorTextSecondary: "white",
+      // colorTextPlaceholder: "#727F96",
+      // colorIconTab: "white",
+      // colorLogo: "dark",
+    },
+    rules: {
+      ".Input, .Block": {
+        // backgroundColor: "transparent",
+        border: "1.5px solid var(--colorPrimary)",
+      },
+    },
   };
 
   const options = {
