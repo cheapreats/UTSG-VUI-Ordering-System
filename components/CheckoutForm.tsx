@@ -5,6 +5,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import styled from "styled-components";
 
 export const CheckoutForm = (): React.ReactElement => {
   const stripe = useStripe();
@@ -35,10 +36,23 @@ export const CheckoutForm = (): React.ReactElement => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <PaymentElement />
-      <button disabled={!stripe}>Submit UwU</button>
+      <Button disabled={!stripe}>Submit UwU</Button>
       {errMsg && <div>{errMsg}</div>}
-    </form>
+    </Form>
   );
 };
+
+const Form = styled.form`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+const Button = styled.button`
+  position: relative;
+  margin-top: 20px;
+  padding 5px;
+;`

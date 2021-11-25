@@ -39,7 +39,7 @@ export const Checkout: React.VFC = () => {
     theme: "stripe" as const,
     // Example
     variables: {
-      // outerWidth: "500px",
+      // outerWidth: "500",
       // fontFamily: "Sohne, system-ui, sans-serif",
       // fontWeightNormal: "500",
       // borderRadius: "8px",
