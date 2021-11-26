@@ -5,10 +5,12 @@ import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
 import {CartItem} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+const axios = require('axios');
 
 var userID = '1';
 const ver = '61a016e9aacf9300069da9be';
-const VFURL = 'https://general-runtime.voiceflow.com/state/'.concat(ver, '/user/', userID, '/interact');
+const VFBaseURL = 'https://general-runtime.voiceflow.com';
+const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
 
 const args = {
@@ -69,6 +71,7 @@ const VBProps: VoiceButtonProps = {
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<HighlightedString>>([]);
+  const [numStrings, setNumStrings] = useState<number>(0);
   const [volume, setVolume] = useState<string>('0%');
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<CartItem>>([]);
@@ -80,6 +83,13 @@ const Landing: NextPage = () => {
     resetTranscript,
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
+
+  const nextHighlightedStrings = highlightedStrings.slice()
+  const addHighlightedString = (HString: HighlightedString): void => {
+    nextHighlightedStrings.push(HString);
+    setHighlightedStrings(nextHighlightedStrings);
+    setNumStrings(nextHighlightedStrings.length);
+  }
 
   if (!browserSupportsSpeechRecognition) {
     console.warn("Browser doesn't support speech recognition.");
@@ -116,28 +126,42 @@ const Landing: NextPage = () => {
     };
   }
 
-  const parseResponse = (res: string, newHighlightedStrings: Array<HighlightedString>):void => {
-    // console.log(res.status);
-    // console.log(res.text);
-    console.log(JSON.parse(res));
-    console.log("Hello.");
-    // data = res
-    // for (var item of JSON.parse(data)) {
-    //   if (item.type == "speak" && item.payload.type == "message"){
-    //     let res: string = item.payload.message;
-    //     speak(res);
-    //     newHighlightedStrings.push(highlightifyString(true, res));
-    //     setHighlightedStrings(newHighlightedStrings);
-    //   } else {
-    //     console.warn("Received an unexpected data type.");
-    //   }
-    // }
+  const parseResponse = (resData: any):void => {
+    
+    console.log(resData);
+
+    for (var item of resData) {
+      if (item.type == "speak" && item.payload.type == "message"){
+        let res: string = item.payload.message;
+        speak(res);
+        addHighlightedString(highlightifyString(true, res));
+      } else {
+        console.warn("Received an unexpected data type.");
+      }
+    }
+  }
+
+  const initVF = async () => {
+    
+    const reqBody = {
+      "request": {
+        "type": "launch",
+      }
+    };
+    
+    const response = await axios({
+      method: 'POST',
+      baseURL: VFBaseURL,
+      url: VFURL,
+      headers: { Authorization: apiKey,},
+      data: reqBody,
+    });
+    
+    parseResponse(response.data);
   }
 
   const getResponse = async (requestText: string) => {
-    let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
-    newHighlightedStrings.push(highlightifyString(false, requestText));
-    setHighlightedStrings(newHighlightedStrings);
+    addHighlightedString(highlightifyString(false, requestText));
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -147,41 +171,24 @@ const Landing: NextPage = () => {
       }
     };
     
-    console.log(VFURL);
-    fetch(VFURL, {
+    const response = await axios({
       method: 'POST',
+      baseURL: VFBaseURL,
+      url: VFURL,
       headers: { Authorization: apiKey,},
       data: reqBody,
-      // mode: 'no-cors',
-    })
-    .then(res => res.text())
-    .then(res => {
-      parseResponse(res, newHighlightedStrings);
-    })
+    });
+
+    // console.log(response.data);
+    parseResponse(response.data);
   }
   
   //initialize the voiceflow session
   useEffect(() => {
     if (!isBegan) {
-      let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
-
-      let reqBody = {
-        "request": {
-          "type": "launch",
-        }
-      };
-      
-      fetch(VFURL, {
-        method: 'POST',
-        headers: { Authorization: apiKey,},
-        body: JSON.stringify(reqBody),
-      })
-      .then(res => res.text())
-      .then(res => {
-        parseResponse(res, newHighlightedStrings);
-      })
-
       setBegan(true);
+
+      initVF();
     }
   })
   
@@ -201,7 +208,7 @@ const Landing: NextPage = () => {
 
   const synth = window.speechSynthesis;
 
-  const speak = (text: string) => {
+  const speak = async (text: string) => {
     //Check if speaking
     if (synth.speaking) {
       console.error('Already speaking');
