@@ -17,6 +17,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK);
 
 export const Checkout: React.VFC = () => {
   const [clientSecret, setClientSecret] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState(false);
 
   // TODO: fetch this somehow
   const price: Price = {
@@ -71,7 +72,7 @@ export const Checkout: React.VFC = () => {
       <button>
         <Link href="/">Back to home</Link>
       </button>
-      <OrderSummary/>
+      <OrderSummary />
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />

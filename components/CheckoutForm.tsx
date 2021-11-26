@@ -33,6 +33,8 @@ export const CheckoutForm = (): React.ReactElement => {
       setErrMsg(result.error.message);
       console.log(result.error.message);
     }
+
+    // TODO:call back to CheaprEats
   };
 
   return (
@@ -54,4 +56,4 @@ const Button = styled.button`
   position: relative;
   margin-top: 20px;
   padding 5px;
-;`
+;`;
