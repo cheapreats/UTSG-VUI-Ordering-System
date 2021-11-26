@@ -6,6 +6,10 @@ import styled from 'styled-components';
 import {CartItem} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
+var userID = '1';
+const ver = '61a016e9aacf9300069da9be';
+const VFURL = 'https://general-runtime.voiceflow.com/state/'.concat(ver, '/user/', userID, '/interact');
+const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
 
 const args = {
   disabled: false,
@@ -68,6 +72,7 @@ const Landing: NextPage = () => {
   const [volume, setVolume] = useState<string>('0%');
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<CartItem>>([]);
+  const [isBegan, setBegan] = useState<boolean>(false);
 
   const {
     transcript,
@@ -111,19 +116,74 @@ const Landing: NextPage = () => {
     };
   }
 
-  const getResponse = (requestText: string):void => {
+  const parseResponse = (res: string, newHighlightedStrings: Array<HighlightedString>):void => {
+    // console.log(res.status);
+    // console.log(res.text);
+    console.log(JSON.parse(res));
+    console.log("Hello.");
+    // data = res
+    // for (var item of JSON.parse(data)) {
+    //   if (item.type == "speak" && item.payload.type == "message"){
+    //     let res: string = item.payload.message;
+    //     speak(res);
+    //     newHighlightedStrings.push(highlightifyString(true, res));
+    //     setHighlightedStrings(newHighlightedStrings);
+    //   } else {
+    //     console.warn("Received an unexpected data type.");
+    //   }
+    // }
+  }
+
+  const getResponse = async (requestText: string) => {
     let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
     newHighlightedStrings.push(highlightifyString(false, requestText));
     setHighlightedStrings(newHighlightedStrings);
 
     //TODO: Use Voiceflow API
-    let res: string = "Okay.";
-    speak(res);
-
-    // let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
-    newHighlightedStrings.push(highlightifyString(true, res));
-    setHighlightedStrings(newHighlightedStrings);
+    const reqBody = {
+      request: {
+        type: "text",
+        payload: requestText,
+      }
+    };
+    
+    console.log(VFURL);
+    fetch(VFURL, {
+      method: 'POST',
+      headers: { Authorization: apiKey,},
+      data: reqBody,
+      // mode: 'no-cors',
+    })
+    .then(res => res.text())
+    .then(res => {
+      parseResponse(res, newHighlightedStrings);
+    })
   }
+  
+  //initialize the voiceflow session
+  useEffect(() => {
+    if (!isBegan) {
+      let newHighlightedStrings: Array<HighlightedString> = highlightedStrings.slice();
+
+      let reqBody = {
+        "request": {
+          "type": "launch",
+        }
+      };
+      
+      fetch(VFURL, {
+        method: 'POST',
+        headers: { Authorization: apiKey,},
+        body: JSON.stringify(reqBody),
+      })
+      .then(res => res.text())
+      .then(res => {
+        parseResponse(res, newHighlightedStrings);
+      })
+
+      setBegan(true);
+    }
+  })
   
   const VBClicked = () => {
     if (!isWaiting){
