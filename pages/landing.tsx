@@ -195,7 +195,6 @@ const Landing: NextPage = () => {
       SpeechRecognition.startListening();
     } else {
       SpeechRecognition.stopListening();
-      
       // console.log(transcript);
 
       getResponse(transcript);
@@ -218,6 +217,35 @@ const Landing: NextPage = () => {
     }
   }
 
+  interface Submit{
+    /** given text to app*/
+    submission?: string;
+    /** when clicked */
+    onClick?: React.MouseEventHandler;
+  }
+
+  const Submit: React.FC<Submit> = ({
+    submission
+}): React.ReactElement => {
+
+    const handleSubmit: React.FormEventHandler = async (event: React.FormEvent<HTMLInputElement>) => {
+        event.preventDefault() 
+        
+        const {name} = event.target as typeof event.target & {
+            name: {value: string}
+        }
+        submission = name.value
+        synth.cancel()
+        getResponse(submission)
+      }
+    return (
+        <Form onSubmit={evt => handleSubmit(evt)}>
+        <input type="text" id="name" placeholder="Type your response..." />
+        <button type="submit">Submit</button> 
+        </Form>
+    )
+}
+
   return (
     <LandingPageContainer>
       <LandingPageContent>
@@ -227,11 +255,19 @@ const Landing: NextPage = () => {
             </HighlightedText>
           </ScrollingList>
           <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
+          <br></br>
+          <Submit/>
         </LandingPage>
       </LandingPageContent>
     </LandingPageContainer>
   );
 };
+
+const Form = styled.form`
+  width: 30;
+  margin-left: auto;
+  margin-right: auto;
+`;
 
 const ScrollingList = styled.div`
 height: 48vh; 
