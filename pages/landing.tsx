@@ -127,7 +127,6 @@ const Landing: NextPage = () => {
   }
 
   const parseResponse = (resData: any):void => {
-
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
         let res: string = item.payload.message;
@@ -193,6 +192,7 @@ const Landing: NextPage = () => {
   const VBClicked = () => {
     if (!isWaiting){
       resetTranscript();
+      synth.cancel();
       SpeechRecognition.startListening();
     } else {
       SpeechRecognition.stopListening();
@@ -207,11 +207,6 @@ const Landing: NextPage = () => {
   const synth = window.speechSynthesis;
 
   const speak = async (text: string) => {
-    //Check if speaking
-    if (synth.speaking) {
-      console.error('Already speaking');
-      return;
-    }
     if (text != '') {
       const speakText = new SpeechSynthesisUtterance(text);
       speakText.onend = e => {
