@@ -3,7 +3,7 @@ import { Button, HighlightedText, HighlightedString, VoiceButton, ClickableSmall
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
-import {CartItem} from '../components';
+import {CartItem, SmartVoiceButton} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 const axios = require('axios');
 
@@ -72,7 +72,6 @@ const VBProps: VoiceButtonProps = {
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<HighlightedString>>([]);
   const [numStrings, setNumStrings] = useState<number>(0);
-  const [volume, setVolume] = useState<string>('0%');
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<CartItem>>([]);
   const [isBegan, setBegan] = useState<boolean>(false);
@@ -227,7 +226,7 @@ const Landing: NextPage = () => {
             <HighlightedText labels={highlightedStrings}>
             </HighlightedText>
           </ScrollingList>
-          <VoiceButton onClick={VBClicked} isPulsing={isWaiting} volume={volume} {...VBProps} {...VBArgs}/>
+          <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
         </LandingPage>
       </LandingPageContent>
     </LandingPageContainer>
