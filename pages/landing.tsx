@@ -19,6 +19,7 @@ const VBArgs = {
   iconSize: '20px',
   // color: '#e00',
   width: '100%',
+  height: '50px',
   props: {
     "margin-left": 'auto',
     "margin-right": 'auto',
@@ -26,11 +27,11 @@ const VBArgs = {
 };
 
 const VBStyle = {
-justifyContent: 'center',
-'marginLeft': 'auto',
-'marginRight': 'auto',
-width: '50%',
-height: '5vh',
+  justifyContent: 'center',
+  'marginLeft': 'auto',
+  'marginRight': 'auto',
+  width: '50%',
+  height: '50px',
 }
 
 const testHighlightedStrings = [
@@ -239,7 +240,7 @@ const Landing: NextPage = () => {
 };
 
 const ScrollingList = styled.div`
-height: 48vh; 
+height: calc(100% - 100px); 
 overflow: hidden; 
 overflow-y: scroll;
 `;
@@ -264,7 +265,7 @@ color: #fff;
 background: #eee;
 padding: 1rem;
 border-radius: 5px;
-min-height: 400px;
+min-height: 200px;
 margin-left: auto;
 margin-right: auto;
 `;
