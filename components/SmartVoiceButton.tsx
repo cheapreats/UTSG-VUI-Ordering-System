@@ -46,7 +46,7 @@ export const SmartVoiceButton: React.FC<VoiceButtonProps> = ({
     const extendedOnClick = (event: React.MouseEvent<Element, MouseEvent>):void => {
         
         isWaiting = !isWaiting;
-        console.log("I've been clicked.", isWaiting);
+        // console.log("I've been clicked.", isWaiting);
 
         if (onClick) onClick(event);
     }
@@ -82,7 +82,7 @@ export const SmartVoiceButton: React.FC<VoiceButtonProps> = ({
             
                 var average = values / length;
     
-                console.log(isWaiting);
+                // console.log(isWaiting);
                 if (!isWaiting) average = 0;
                 setVolume(average.toString() + "%");
             }
