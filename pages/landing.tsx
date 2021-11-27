@@ -13,7 +13,7 @@ const VFBaseURL = 'https://general-runtime.voiceflow.com';
 const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
 
-const args = {
+const VBArgs = {
   disabled: false,
   icon: Microphone,
   iconSize: '20px',
@@ -127,8 +127,6 @@ const Landing: NextPage = () => {
   }
 
   const parseResponse = (resData: any):void => {
-    
-    console.log(resData);
 
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
@@ -234,7 +232,7 @@ const Landing: NextPage = () => {
             <HighlightedText labels={highlightedStrings}>
             </HighlightedText>
           </ScrollingList>
-          <VoiceButton onClick={VBClicked} isPulsing={isWaiting} volume={volume} {...VBProps} {...args}/>
+          <VoiceButton onClick={VBClicked} isPulsing={isWaiting} volume={volume} {...VBProps} {...VBArgs}/>
         </LandingPage>
       </LandingPageContent>
     </LandingPageContainer>
