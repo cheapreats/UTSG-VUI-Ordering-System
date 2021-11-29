@@ -164,7 +164,15 @@ const Landing: NextPage = () => {
           let targetVariable: string = item.payload.message.substring(varIndicatorStart + 1, varIndicatorEnd);
           res = res.replace(''.concat('[', targetVariable, ']'), "");
 
-          list = smallTextifyList(response.data.variables[targetVariable]);
+          if (targetVariable == "cartID"){
+            let cartID = response.data.variables[targetVariable];
+            
+            window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
+            return
+          } else {
+            list = smallTextifyList(response.data.variables[targetVariable]);
+          }
+
           console.log(response.data)
         }
 
@@ -173,7 +181,7 @@ const Landing: NextPage = () => {
         addHighlightedString(highlightifyString(true, res, list));
 
       } else {
-        console.warn("Received an unexpected data type: Type - ".concat(item.type, " Payload Type - ", item.payload.type));
+        console.warn("Received an unexpected data type: Item - ".concat(item));
       }
     }
   }
