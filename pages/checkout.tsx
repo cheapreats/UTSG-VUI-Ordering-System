@@ -6,6 +6,7 @@ import { CheckoutForm } from "../components/CheckoutForm";
 import { OrderSummary } from "../components/OrderSummary";
 import { getCustomerSecret, getCartById } from "../functions/checkout";
 import { useRouter } from "next/router";
+import { Cart } from "../components/interfaces";
 
 declare var process: {
   env: {
@@ -17,33 +18,34 @@ declare var process: {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK);
 
 export const Checkout: React.VFC = () => {
-  const [clientSecret, setClientSecret] = useState("");
-  const [cart, setCart] = useState();
+  const [clientSecret, setClientSecret] = useState<string>("");
+  const [cart, setCart] = useState<Cart>();
 
-  // Call getCartId here
   const router = useRouter();
+  const price = {
+    currency: "cad",
+    "automatic_payment_methods[enabled]": true,
+  };
 
   useEffect(() => {
-    // TODO: fix typescript
-    const { id }: string = router.query;
-    console.log("id:", id);
+    const { id } = router.query;
+    const idStr: string = id as string;
 
     // Create PaymentIntent as soon as the page loads
-    getCartById(id).then((body) => {
-      setCart(body);
-    });
 
-    const price = {
-      amount: 420,
-      currency: "eur",
-      "automatic_payment_methods[enabled]": true,
-    };
-
-    // get the customer secret from the PaymentIntent
-    getCustomerSecret(price).then((body) => {
-      setClientSecret(body.client_secret);
-    });
+    if (idStr) {
+      getCartById(idStr).then((body) => {
+        setCart(body.data.cart);
+      });
+    }
   }, [router.query]);
+
+  useEffect(() => {
+    // get the customer secret from the PaymentIntent
+    getCustomerSecret(cart?.subtotal, price).then((body) => {
+      setClientSecret(body?.client_secret);
+    });
+  }, [cart]);
 
   const appearance = {
     theme: "stripe" as const,
@@ -56,10 +58,7 @@ export const Checkout: React.VFC = () => {
 
   return (
     <>
-      <button>
-        <Link href="/">Back to home</Link>
-      </button>
-      <OrderSummary cart={cart} />
+      {cart !== undefined && <OrderSummary key={cart._id} cart={cart} />}
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />

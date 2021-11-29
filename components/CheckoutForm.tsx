@@ -32,7 +32,6 @@ export const CheckoutForm = (): React.ReactElement => {
 
     if (result.error) {
       setErrMsg(result.error.message);
-      console.log(result.error.message);
     }
 
     // TODO:call back to CheaprEats
@@ -41,7 +40,7 @@ export const CheckoutForm = (): React.ReactElement => {
   return (
     <Form onSubmit={handleSubmit}>
       <PaymentElement />
-      <Button disabled={!stripe}>Submit UwU</Button>
+      <Button disabled={!stripe}>Submit</Button>
       {errMsg && <div>{errMsg}</div>}
     </Form>
   );

@@ -1,8 +1,7 @@
 import { MenuItem } from "./MenuItem";
 
 export interface Cart {
-  id: string;
-  items: MenuItem[];
+  _id: string;
+  items: {menu_item: MenuItem}[];
   subtotal: number;
-  total: number;
 }
