@@ -26,6 +26,7 @@ export const CheckoutForm = (): React.ReactElement => {
       elements,
       confirmParams: {
         return_url: "http://localhost:8082/test",
+        // shipping: {Shipping Object}
       },
     });
 

@@ -4,7 +4,8 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutForm } from "../components/CheckoutForm";
 import { OrderSummary } from "../components/OrderSummary";
-import { Price, getCustomerSecret } from "../functions/checkout";
+import { getCustomerSecret, getCartById } from "../functions/checkout";
+import { useRouter } from "next/router";
 
 declare var process: {
   env: {
@@ -17,49 +18,35 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK);
 
 export const Checkout: React.VFC = () => {
   const [clientSecret, setClientSecret] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState(false);
+  const [cart, setCart] = useState();
 
-  // TODO: fetch this somehow
-  const price: Price = {
-    amount: 420,
-    currency: "cad",
-  };
+  // Call getCartId here
+  const router = useRouter();
 
   useEffect(() => {
+    // TODO: fix typescript
+    const { id }: string = router.query;
+    console.log("id:", id);
+
     // Create PaymentIntent as soon as the page loads
-    const price2 = {
+    getCartById(id).then((body) => {
+      setCart(body);
+    });
+
+    const price = {
       amount: 420,
       currency: "eur",
       "automatic_payment_methods[enabled]": true,
     };
-    getCustomerSecret(price2).then((body) => {
+
+    // get the customer secret from the PaymentIntent
+    getCustomerSecret(price).then((body) => {
       setClientSecret(body.client_secret);
     });
-  }, []);
+  }, [router.query]);
 
   const appearance = {
     theme: "stripe" as const,
-    // Example
-    variables: {
-      // outerWidth: "500",
-      // fontFamily: "Sohne, system-ui, sans-serif",
-      // fontWeightNormal: "500",
-      // borderRadius: "8px",
-      // colorBackground: "#0A2540",
-      // colorPrimary: "#EFC078",
-      // colorPrimaryText: "#1A1B25",
-      // colorText: "white",
-      // colorTextSecondary: "white",
-      // colorTextPlaceholder: "#727F96",
-      // colorIconTab: "white",
-      // colorLogo: "dark",
-    },
-    rules: {
-      ".Input, .Block": {
-        // backgroundColor: "transparent",
-        border: "1.5px solid var(--colorPrimary)",
-      },
-    },
   };
 
   const options = {
@@ -72,7 +59,7 @@ export const Checkout: React.VFC = () => {
       <button>
         <Link href="/">Back to home</Link>
       </button>
-      <OrderSummary />
+      <OrderSummary cart={cart} />
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />
