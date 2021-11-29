@@ -96,7 +96,7 @@ const Landing: NextPage = () => {
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
-    let txtAlign:string = 'right';
+    let txtAlign = 'right';
     if (fromBot){
       txtAlign = 'left';
       text = 'Bot:\n' + text;
@@ -104,8 +104,8 @@ const Landing: NextPage = () => {
       text = 'You:\n' + text;
     }
 
-    let margin_left:string = 'auto'; 
-    let margin_right:string = '0';
+    let margin_left = 'auto'; 
+    let margin_right = '0';
     if (fromBot) {
       margin_left = '0'; 
       margin_right = 'auto';
