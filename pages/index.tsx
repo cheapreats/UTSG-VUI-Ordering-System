@@ -13,6 +13,7 @@ const Home: NextPage = () => {
       <Button>
         <Link href="/test">To Test</Link>
       </Button>
+      <Link href="/landing">To Landing</Link>
     </div>
   );
 };
