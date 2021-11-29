@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { Button, HighlightedText, HighlightedString, VoiceButton, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps } from "@cheapreats/react-ui";
+import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 const axios = require('axios');
 
 var userID = '1';
-const ver = '61a016e9aacf9300069da9be';
+const ver = '61a45af9bb4f63000637acef';
 const VFBaseURL = 'https://general-runtime.voiceflow.com';
 const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
@@ -63,7 +63,7 @@ const testHighlightedStrings = [
 },
 ]
 
-const VBProps: VoiceButtonProps = {
+const VBProps: any = {
   buttonProps: {
     style: VBStyle,
   },
@@ -95,7 +95,7 @@ const Landing: NextPage = () => {
     console.warn("Browser doesn't support speech recognition.");
   }
 
-  const highlightifyString = (fromBot: boolean, text: string):HighlightedString => {
+  const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
     let txtAlign:string = 'right';
     if (fromBot){
       txtAlign = 'left';
@@ -111,9 +111,15 @@ const Landing: NextPage = () => {
       margin_right = 'auto';
     }
 
+    let isSpecial = false;
+    if (list){
+      isSpecial = true;
+    }
+
     return {
       text: text,
-      isSpecial: false,
+      isSpecial: isSpecial,
+      listItemsBodies: list,
       textProps: {
         textAlign: txtAlign,
         type: 'div',
@@ -126,14 +132,48 @@ const Landing: NextPage = () => {
     };
   }
 
-  const parseResponse = (resData: any):void => {
+
+
+  const smallTextifyList = (strings: Array<string>):Array<any> => {
+    let smallTexts: Array<any> = []
+    for (var str of strings) {
+      smallTexts.push(<SmallText>{str}</SmallText>);
+    }
+    return smallTexts
+  }
+
+  const parseResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
         let res: string = item.payload.message;
+
+        let list:Array<any> | undefined = undefined;
+        if (item.payload.message.indexOf('[') != -1){
+          console.warn("Received a list.");
+          
+          let varIndicatorStart: number = item.payload.message.indexOf('[')
+          let varIndicatorEnd: number = item.payload.message.indexOf(']')
+          
+          const response = await axios({
+            method: 'GET',
+            baseURL: VFBaseURL,
+            url: ''.concat('/state/', ver, '/user/', userID),
+            headers: { Authorization: apiKey,}
+          });
+
+          let targetVariable: string = item.payload.message.substring(varIndicatorStart + 1, varIndicatorEnd);
+          res = res.replace(''.concat('[', targetVariable, ']'), "");
+
+          list = smallTextifyList(response.data.variables[targetVariable]);
+          console.log(response.data)
+        }
+
+
         speak(res);
-        addHighlightedString(highlightifyString(true, res));
+        addHighlightedString(highlightifyString(true, res, list));
+
       } else {
-        console.warn("Received an unexpected data type.");
+        console.warn("Received an unexpected data type: Type - ".concat(item.type, " Payload Type - ", item.payload.type));
       }
     }
   }
@@ -146,6 +186,13 @@ const Landing: NextPage = () => {
       }
     };
     
+    await axios({
+      method: 'DELETE',
+      baseURL: VFBaseURL,
+      url: ''.concat('/state/', ver, '/user/', userID),
+      headers: { Authorization: apiKey,},
+    });
+
     const response = await axios({
       method: 'POST',
       baseURL: VFBaseURL,
@@ -153,12 +200,14 @@ const Landing: NextPage = () => {
       headers: { Authorization: apiKey,},
       data: reqBody,
     });
+
+    console.log(response)
     
     parseResponse(response.data);
   }
 
   const getResponse = async (requestText: string) => {
-    addHighlightedString(highlightifyString(false, requestText));
+    addHighlightedString(highlightifyString(false, requestText, undefined));
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -243,6 +292,7 @@ const ScrollingList = styled.div`
 height: calc(100% - 100px); 
 overflow: hidden; 
 overflow-y: scroll;
+overflow-wrap: break-word;
 `;
 
 const LandingPageContainer = styled.div`
@@ -260,12 +310,12 @@ display: table-cell;
 
 const LandingPage = styled.div`
 width: 60%;
-height: 60%;
+height: 80vh;
 color: #fff;
 background: #eee;
 padding: 1rem;
 border-radius: 5px;
-min-height: 200px;
+min-height: 300px;
 margin-left: auto;
 margin-right: auto;
 `;
