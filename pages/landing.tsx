@@ -80,8 +80,8 @@ const Landing: NextPage = () => {
   const {
     transcript,
     listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
+    resetTranscript
+    // browserSupportsSpeechRecognition
   } = useSpeechRecognition();
 
   const nextHighlightedStrings = highlightedStrings.slice()
@@ -91,9 +91,9 @@ const Landing: NextPage = () => {
     setNumStrings(nextHighlightedStrings.length);
   }
 
-  if (!browserSupportsSpeechRecognition) {
-    console.warn("Browser doesn't support speech recognition.");
-  }
+  // if (!browserSupportsSpeechRecognition) {
+  //   console.warn("Browser doesn't support speech recognition.");
+  // }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
     let txtAlign = 'right';
