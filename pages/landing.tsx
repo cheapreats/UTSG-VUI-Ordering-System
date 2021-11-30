@@ -35,35 +35,6 @@ const VBStyle = {
   height: '50px',
 }
 
-const testHighlightedStrings = [
-{
-    text: 'Ordering a',
-    isSpecial: false,
-},
-{
-    text: 'Burger',
-    isSpecial: true,
-    listItemsArgs: [],
-    listItemsBodies: [
-        <ClickableSmallText>Burger</ClickableSmallText>, 
-        <ClickableSmallText>Fries</ClickableSmallText>
-    ],
-},
-{
-    text: 'from',
-    isSpecial: false,
-},
-{
-    text: 'Wendy\'s',
-    isSpecial: true,
-    listItemsArgs: [],
-    listItemsBodies: [
-        <ClickableSmallText>{'Wendy\'s'}</ClickableSmallText>, 
-        <ClickableSmallText>Burger King</ClickableSmallText>
-    ],
-},
-]
-
 const VBProps: any = {
   buttonProps: {
     style: VBStyle,
@@ -87,8 +58,7 @@ const Landing: NextPage = () => {
   const {
     transcript,
     listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
+    resetTranscript
   } = useSpeechRecognition();
 
   const nextHighlightedStrings = highlightedStrings.slice()
@@ -96,10 +66,6 @@ const Landing: NextPage = () => {
     nextHighlightedStrings.push(HString);
     setHighlightedStrings(nextHighlightedStrings);
     setNumStrings(nextHighlightedStrings.length);
-  }
-
-  if (!browserSupportsSpeechRecognition) {
-    console.warn("Browser doesn't support speech recognition.");
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
@@ -127,6 +93,9 @@ const Landing: NextPage = () => {
       text: text,
       isSpecial: isSpecial,
       listItemsBodies: list,
+      // listProps: {
+      //   startState: true,
+      // },
       textProps: {
         textAlign: txtAlign,
         type: 'div',
@@ -177,14 +146,15 @@ const Landing: NextPage = () => {
             //window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
             //return
 
-            QRCode.toDataURL("http://localhost:8080/checkout?id=".concat(cartID), (err, url) => {
+            const checkoutURL = "http://localhost:8080/checkout?id=".concat(cartID)
+            QRCode.toDataURL(checkoutURL, (err, url) => {
               if (err) {
                 console.error(err);
               }
               else {
                 imgUrl = url;
-                list = smallTextifyList(imgUrl);
-                console.log(imgUrl);
+                list = [<CheckoutQR src={imgUrl}/>];
+                console.log("Checkout is at: " + checkoutURL);
               }
             });
 
@@ -310,7 +280,6 @@ const Landing: NextPage = () => {
             getResponse(submission)
           }}/>
         </LandingPage>
-        <CheckoutQR src={imgUrl} />
       </LandingPageContent>
     </LandingPageContainer>
   );
