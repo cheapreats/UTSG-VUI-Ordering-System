@@ -25,7 +25,7 @@ export const CheckoutForm = (): React.ReactElement => {
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "http://localhost:8082/test",
+        return_url: "http://localhost:8080/test",
         // shipping: {Shipping Object}
       },
     });

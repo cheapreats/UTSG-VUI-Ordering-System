@@ -44,7 +44,7 @@ export const Checkout: React.VFC = () => {
 
     // get the customer secret from the PaymentIntent
     getCustomerSecret(cart?.subtotal, CURRENCY).then((body) => {
-      setClientSecret(body.client_secret);
+      setClientSecret(body?.client_secret);
     });
   }, [cart]);
 
