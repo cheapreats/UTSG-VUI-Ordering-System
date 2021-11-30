@@ -5,6 +5,7 @@ import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import QRCode from 'qrcode';
 const axios = require('axios');
 
 var userID = '1';
@@ -69,6 +70,12 @@ const VBProps: any = {
   },
 }
 
+const CheckoutQR = styled.img`
+  width: 300px;
+  height: 300px;
+  border: 1px solid black;
+`
+let imgUrl;
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<HighlightedString>>([]);
@@ -167,8 +174,20 @@ const Landing: NextPage = () => {
           if (targetVariable == "cartID"){
             let cartID = response.data.variables[targetVariable];
             
-            window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
-            return
+            //window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
+            //return
+
+            QRCode.toDataURL("http://localhost:8080/checkout?id=".concat(cartID), (err, url) => {
+              if (err) {
+                console.error(err);
+              }
+              else {
+                imgUrl = url;
+                list = smallTextifyList(imgUrl);
+                console.log(imgUrl);
+              }
+            });
+
           } else {
             list = smallTextifyList(response.data.variables[targetVariable]);
           }
@@ -291,6 +310,7 @@ const Landing: NextPage = () => {
             getResponse(submission)
           }}/>
         </LandingPage>
+        <CheckoutQR src={imgUrl} />
       </LandingPageContent>
     </LandingPageContainer>
   );
