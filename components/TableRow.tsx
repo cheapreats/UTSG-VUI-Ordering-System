@@ -13,9 +13,9 @@ export const TableRow: React.VFC<TableRowProps> = ({
 }) => {
   return (
     <tr>
-      <td id={name}> {name}</td>
-      <td id={name}> {price}</td>
-      <td id={name}> {quantity}</td>
+      <td key={name}> {name}</td>
+      <td key={price}> {price}</td>
+      <td key={quantity}> {quantity}</td>
     </tr>
   );
 };

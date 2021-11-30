@@ -11,8 +11,8 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
   cart,
   ...props
 }) => {
-  if (cart === undefined) {
-    return <SmallText>"Loading..."</SmallText>;
+  if (!cart) {
+    return <SmallText>Loading...</SmallText>;
   }
 
   let quantities: {
@@ -24,17 +24,14 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
   } = {};
 
   const appendToQuantities = (element: { menu_item: MenuItem }) => {
-    if (typeof element.menu_item === undefined) {
+    if (!element.menu_item) {
       return;
     }
 
-    if (!(element.menu_item?._id in quantities)) {
-      const { name, price } = element.menu_item
-        ? element.menu_item
-        : { name: "no name", price: -1 };
+    if (!(element.menu_item._id in quantities)) {
       quantities[element.menu_item._id] = {
-        name: name,
-        price: price,
+        name: element.menu_item.name,
+        price: element.menu_item.price,
         quantity: 1,
       };
     } else {
@@ -42,9 +39,9 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
     }
   };
 
+  // TODO: change to map
   cart.items.forEach(appendToQuantities);
 
-  // function to build a row
   const renderRows = () => {
     let rows = [];
     for (const row in quantities) {
@@ -60,6 +57,7 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
     return rows;
   };
 
+  // TODO: change to existing styling
   return (
     <StyledTable>
       <thead>

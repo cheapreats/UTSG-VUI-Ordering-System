@@ -14,7 +14,7 @@ export const getCustomerSecret = async (amount: number | undefined, price: Price
   };
 
   const concatParam = {
-    amount: amount,
+    amount: (amount * 1.13 * 100).toFixed(0),
     currency: price.currency,
     "automatic_payment_methods[enabled]": price["automatic_payment_methods[enabled]"],
   }

@@ -22,10 +22,6 @@ export const Checkout: React.VFC = () => {
   const [cart, setCart] = useState<Cart>();
 
   const router = useRouter();
-  const price = {
-    currency: "cad",
-    "automatic_payment_methods[enabled]": true,
-  };
 
   useEffect(() => {
     const { id } = router.query;
@@ -41,8 +37,13 @@ export const Checkout: React.VFC = () => {
   }, [router.query]);
 
   useEffect(() => {
+    const CURRENCY = {
+      currency: "cad",
+      "automatic_payment_methods[enabled]": true,
+    };
+
     // get the customer secret from the PaymentIntent
-    getCustomerSecret(cart?.subtotal, price).then((body) => {
+    getCustomerSecret(cart?.subtotal, CURRENCY).then((body) => {
       setClientSecret(body?.client_secret);
     });
   }, [cart]);
@@ -58,7 +59,7 @@ export const Checkout: React.VFC = () => {
 
   return (
     <>
-      {cart !== undefined && <OrderSummary key={cart._id} cart={cart} />}
+      {!!cart && <OrderSummary key={cart._id} cart={cart} />}
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />
