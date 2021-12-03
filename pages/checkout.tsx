@@ -29,9 +29,9 @@ export const Checkout: React.VFC = () => {
 
     // Create PaymentIntent as soon as the page loads
 
-    if (idStr) {
+    if (!!idStr) {
       getCartById(idStr).then((body) => {
-        setCart(body.data.cart);
+        setCart(body?.data.cart);
       });
     }
   }, [router.query]);

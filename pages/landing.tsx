@@ -8,7 +8,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import QRCode from 'qrcode';
 const axios = require('axios');
 
-var userID = '1';
+var userID = '2';
 const ver = '61a45af9bb4f63000637acef';
 const VFBaseURL = 'https://general-runtime.voiceflow.com';
 const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
@@ -153,7 +153,7 @@ const Landing: NextPage = () => {
               }
               else {
                 imgUrl = url;
-                list = [<CheckoutQR src={imgUrl}/>];
+                list = [<a href={checkoutURL}><CheckoutQR src={imgUrl}/></a>];
                 console.log("Checkout is at: " + checkoutURL);
               }
             });
@@ -183,12 +183,12 @@ const Landing: NextPage = () => {
       }
     };
     
-    await axios({
-      method: 'DELETE',
-      baseURL: VFBaseURL,
-      url: ''.concat('/state/', ver, '/user/', userID),
-      headers: { Authorization: apiKey,},
-    });
+    // await axios({
+    //   method: 'DELETE',
+    //   baseURL: VFBaseURL,
+    //   url: ''.concat('/state/', ver, '/user/', userID),
+    //   headers: { Authorization: apiKey,},
+    // });
 
     const response = await axios({
       method: 'POST',
