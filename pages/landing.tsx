@@ -100,6 +100,7 @@ const Landing: NextPage = () => {
         textAlign: txtAlign,
         type: 'div',
         style:{
+          background: '#afa',
           width: '80%',
           marginLeft: margin_left,
           marginRight: margin_right,
