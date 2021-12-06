@@ -101,7 +101,7 @@ const Landing: NextPage = () => {
       isRight: fromBot,
       listProps: {
         // dropdownButton: <div/>,
-        beginOpen: true,
+        beginOpen: false,
         right: false,
         style:{
           // width: '80%',
@@ -375,7 +375,7 @@ const SuperContainer = styled.div`
 
 const ScrollingList = styled.div`
   ${Mixins.scroll}
-  height: calc(100% - 100px); 
+  height: calc(100% - 125px); 
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
