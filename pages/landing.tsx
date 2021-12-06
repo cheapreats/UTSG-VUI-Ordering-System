@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
+import 'react-chat-elements/dist/main.css';
+import { MessageBox } from 'react-chat-elements';
 const axios = require('axios');
 
 var userID = '2';
@@ -64,8 +66,8 @@ const Landing: NextPage = () => {
   const nextHighlightedStrings = highlightedStrings.slice()
   const addHighlightedString = (HString: HighlightedString): void => {
     nextHighlightedStrings.push(HString);
-    setHighlightedStrings(nextHighlightedStrings);
-    setNumStrings(nextHighlightedStrings.length);
+    setHighlightedStrings([...nextHighlightedStrings]);
+    // setNumStrings(nextHighlightedStrings.length);
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
@@ -89,10 +91,13 @@ const Landing: NextPage = () => {
       isSpecial = true;
     }
 
+    const textMarginSize = '10px'
+
     return {
       text: text,
       isSpecial: isSpecial,
       listItemsBodies: list,
+      isRight: fromBot,
       // listProps: {
       //   startState: true,
       // },
@@ -100,16 +105,51 @@ const Landing: NextPage = () => {
         textAlign: txtAlign,
         type: 'div',
         style:{
-          background: '#afa',
-          width: '80%',
-          marginLeft: margin_left,
-          marginRight: margin_right,
+          // width: '80%',
+          marginLeft: textMarginSize,
+          marginRight: textMarginSize,
         },
       },
     };
   }
 
+  const marginSize = '10px'
+  const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
+    let margin_left = 'auto'; 
+    let margin_right = marginSize;
+    if (highlightedString.isRight) {
+      margin_left = marginSize; 
+      margin_right = 'auto';
+    }
+    
+    let textBubbleStyle = {
+      width: 'fit-content',
+      marginLeft: margin_left,
+      marginRight: margin_right,
+    }
+    
+    return (
+      <TextBubble style={textBubbleStyle}>
+        <div>
+          <HighlightedText labels={[highlightedString]}/>
+        </div>
+      </TextBubble>
+    )
+  }
 
+  const displayHighlightedText = ():React.ReactElement => {
+    
+    return <>
+      {highlightedStrings.map((_, i) => (
+          // <TextBubble style={{width: 'fit-content'}}>
+          //   <div>
+          //     <HighlightedText labels={[highlightedStrings[i]]}/>
+          //   </div>
+          // </TextBubble>
+          createTextBubble(highlightedStrings[i])
+      ))}
+    </>
+  }
 
   const smallTextifyList = (strings: Array<string>):Array<any> => {
     let smallTexts: Array<any> = []
@@ -118,6 +158,9 @@ const Landing: NextPage = () => {
     }
     return smallTexts
   }
+
+
+
 
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
@@ -205,6 +248,7 @@ const Landing: NextPage = () => {
   }
 
   const getResponse = async (requestText: string) => {
+    if (requestText === ''){return false}
     addHighlightedString(highlightifyString(false, requestText, undefined));
 
     //TODO: Use Voiceflow API
@@ -271,8 +315,9 @@ const Landing: NextPage = () => {
       <LandingPageContent>
         <LandingPage>
           <ScrollingList>
-            <HighlightedText labels={highlightedStrings}>
-            </HighlightedText>
+            {displayHighlightedText()}
+            {/* <HighlightedText labels={highlightedStrings}>
+            </HighlightedText> */}
           </ScrollingList>
           <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
           <br></br>
@@ -316,6 +361,12 @@ border-radius: 5px;
 min-height: 300px;
 margin-left: auto;
 margin-right: auto;
+`;
+
+const TextBubble = styled.div`
+border: 1.5px solid rgba(0,0,0,0.1);
+border-radius: 20px; 
+margin-bottom: 10px;  
 `;
 
 export default Landing;
