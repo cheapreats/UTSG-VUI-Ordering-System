@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps } from "@cheapreats/react-ui";
+import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
@@ -332,10 +332,11 @@ const Landing: NextPage = () => {
 };
 
 const ScrollingList = styled.div`
-height: calc(100% - 100px); 
-overflow: hidden; 
-overflow-y: scroll;
-overflow-wrap: break-word;
+  ${Mixins.scroll}
+  height: calc(100% - 100px); 
+  overflow: hidden; 
+  overflow-y: scroll;
+  overflow-wrap: break-word;
 `;
 
 const LandingPageContainer = styled.div`
