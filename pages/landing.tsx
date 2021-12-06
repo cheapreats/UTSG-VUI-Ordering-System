@@ -7,8 +7,8 @@ import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
 import 'react-chat-elements/dist/main.css';
-import { MessageBox } from 'react-chat-elements';
 const axios = require('axios');
+
 
 var userID = '2';
 const ver = '61a45af9bb4f63000637acef';
