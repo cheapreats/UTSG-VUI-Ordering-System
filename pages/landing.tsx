@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
+import { QRScan, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
@@ -132,6 +132,7 @@ const Landing: NextPage = () => {
     }
     
     let textBubbleStyle = {
+      maxWidth: '80%',
       width: 'fit-content',
       marginLeft: margin_left,
       marginRight: margin_right,
@@ -204,7 +205,7 @@ const Landing: NextPage = () => {
               }
               else {
                 imgUrl = url;
-                list = [<a href={checkoutURL}><CheckoutQR src={imgUrl}/></a>];
+                list = [<a href={checkoutURL}><QRScan qrDisplay={<CheckoutQR src={imgUrl}/>}/></a>];
                 console.log("Checkout is at: " + checkoutURL);
               }
             });
