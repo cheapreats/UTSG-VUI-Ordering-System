@@ -97,9 +97,17 @@ const Landing: NextPage = () => {
       isSpecial: isSpecial,
       listItemsBodies: list,
       isRight: fromBot,
-      // listProps: {
-      //   startState: true,
-      // },
+      listProps: {
+        // dropdownButton: <div/>,
+        beginOpen: true,
+        right: false,
+        style:{
+          // width: '80%',
+          left: '1px',
+          marginLeft: textMarginSize,
+          marginRight: textMarginSize,
+        },
+      },
       textProps: {
         textAlign: txtAlign,
         type: 'div',
