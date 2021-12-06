@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
-import 'react-chat-elements/dist/main.css';
 const axios = require('axios');
 
 
