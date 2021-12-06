@@ -21,7 +21,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-speech-recognition": "^3.9.0",
-    "react-chat-elements": "^10.16.0",
     "stripe": "^8.191.0",
     "styled-components": "^5.3.3"
   },
