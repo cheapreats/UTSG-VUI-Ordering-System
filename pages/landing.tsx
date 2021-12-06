@@ -101,7 +101,7 @@ const Landing: NextPage = () => {
       isRight: fromBot,
       listProps: {
         // dropdownButton: <div/>,
-        beginOpen: false,
+        beginOpen: true,
         right: false,
         style:{
           // width: '80%',
