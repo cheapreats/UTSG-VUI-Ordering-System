@@ -295,6 +295,8 @@ const Landing: NextPage = () => {
     // console.log(response.data);
     parseResponse(response.data);
   }
+
+  let synth:SpeechSynthesis|undefined = undefined;
   
   //initialize the voiceflow session
   useEffect(() => {
@@ -303,12 +305,14 @@ const Landing: NextPage = () => {
 
       initVF();
     }
+
+    synth = window.speechSynthesis;
   })
   
   const VBClicked = () => {
     if (!isWaiting){
       resetTranscript();
-      synth.cancel();
+      if (synth) synth.cancel();
       SpeechRecognition.startListening();
     } else {
       SpeechRecognition.stopListening();
@@ -319,8 +323,6 @@ const Landing: NextPage = () => {
     setIsWaiting(!isWaiting);
   }
 
-  const synth = window.speechSynthesis;
-
   const speak = async (text: string) => {
     if (text != '') {
       const speakText = new SpeechSynthesisUtterance(text);
@@ -330,7 +332,7 @@ const Landing: NextPage = () => {
       speakText.onerror = e => {
         console.log('Something went wrong');
       }
-      synth.speak(speakText);
+      if (synth) synth.speak(speakText);
     }
   }
 
@@ -357,7 +359,7 @@ const Landing: NextPage = () => {
             <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
             <br></br>
             <Submit onSubmit = {function(submission: string){
-              synth.cancel()
+              if (synth) synth.cancel();
               getResponse(submission)
             }}/>
           </LandingPage>
