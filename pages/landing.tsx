@@ -1,11 +1,13 @@
 import type { NextPage } from "next";
-import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins } from "@cheapreats/react-ui";
+import { Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
+import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
 import styled from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
+import Theme from "@cheapreats/react-ui/dist/Themes/ThemeTemplate";
 const axios = require('axios');
 
 
@@ -159,8 +161,6 @@ const Landing: NextPage = () => {
   }
 
 
-
-
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
@@ -246,6 +246,23 @@ const Landing: NextPage = () => {
     parseResponse(response.data);
   }
 
+  const getVendorNavigationBarProps = (): INavigationBarProps => ({
+    navigationBarItems: [
+        {
+            label: 'Home',
+        },
+        {
+            label: 'Delivery',
+        },
+        {
+            label: 'PickUp',
+        },
+        {
+            label: 'Cart'
+        },
+    ],
+  })
+
   const getResponse = async (requestText: string) => {
     if (requestText === ''){return false}
     addHighlightedString(highlightifyString(false, requestText, undefined));
@@ -310,25 +327,43 @@ const Landing: NextPage = () => {
 
 
   return (
-    <LandingPageContainer>
-      <LandingPageContent>
-        <LandingPage>
-          <ScrollingList>
-            {displayHighlightedText()}
-            {/* <HighlightedText labels={highlightedStrings}>
-            </HighlightedText> */}
-          </ScrollingList>
-          <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
-          <br></br>
-          <Submit onSubmit = {function(submission: string){
-            synth.cancel()
-            getResponse(submission)
-          }}/>
-        </LandingPage>
-      </LandingPageContent>
-    </LandingPageContainer>
+    <SuperContainer>
+      <NavigationBarContainer>
+        <img
+          src='https://www.cheapreats.com/static/90939a6dc8dacea8e44d046c72521a1b/16c7d/logo.png'
+          width='50px'
+          alt='CheaprEats logo'
+        />
+        <Heading color='primary'>CheaprEats</Heading>
+        <NavigationBar {...getVendorNavigationBarProps()} />
+      </NavigationBarContainer>
+      <LandingPageContainer>
+        <LandingPageContent>
+          <LandingPage>
+            <ScrollingList>
+              {displayHighlightedText()}
+              {/* <HighlightedText labels={highlightedStrings}>
+              </HighlightedText> */}
+            </ScrollingList>
+            <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
+            <br></br>
+            <Submit onSubmit = {function(submission: string){
+              synth.cancel()
+              getResponse(submission)
+            }}/>
+          </LandingPage>
+        </LandingPageContent>
+      </LandingPageContainer>
+    </SuperContainer>
   );
 };
+
+const NavigationBarContainer = styled.div`
+  ${Mixins.flex('row')};
+`;
+
+const SuperContainer = styled.div`
+`;
 
 const ScrollingList = styled.div`
   ${Mixins.scroll}
