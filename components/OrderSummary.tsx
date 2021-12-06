@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { MenuItem, Cart } from "../components/interfaces";
-import { SmallText } from "@cheapreats/react-ui";
+import { Heading } from "@cheapreats/react-ui";
 import { TableRow } from "../components/TableRow";
 
 interface OrderSummaryProps {
@@ -57,45 +57,63 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
     return rows;
   };
 
-  // TODO: change to existing styling
+  const headingProps = {
+    type: "h5",
+    textAlign: "center",
+  };
+
   return (
-    <StyledTable>
-      <thead>
+    <div>
+      <Header {...headingProps}>Order Summary</Header>
+      <OrderTable>
         <tr>
-          <StyledTH>Item</StyledTH>
-          <StyledTH>Price</StyledTH>
-          <StyledTH>Quantity</StyledTH>
+          <TH>Item</TH>
+          <TH>Price</TH>
+          <TH>Quantity</TH>
         </tr>
-      </thead>
-      <tbody>
         {renderRows()}
+      </OrderTable>
+      <PriceTable>
         <tr>
-          <StyledTD>Subtotal: ${cart.subtotal.toFixed(2)}</StyledTD>
+          <TD>Subtotal: ${cart.subtotal.toFixed(2)}</TD>
         </tr>
         <tr>
-          <StyledTD>Tax: ${(cart.subtotal * 0.13).toFixed(2)}</StyledTD>
+          <TD>Tax: ${(cart.subtotal * 0.13).toFixed(2)}</TD>
         </tr>
         <tr>
-          <StyledTD>Total: ${(cart.subtotal * 1.13).toFixed(2)}</StyledTD>
+          <TD>Total: ${(cart.subtotal * 1.13).toFixed(2)}</TD>
         </tr>
-      </tbody>
-    </StyledTable>
+      </PriceTable>
+    </div>
   );
 };
 
-const StyledTable = styled.table`
+const Header = styled(Heading)`
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-decoration: underline;
+`;
+
+const OrderTable = styled.table`
   width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1em;
+`;
+
+const PriceTable = styled.table`
+  width: 50%;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
 `;
 
-const StyledTH = styled.th`
-  text-align: left;
+const TH = styled.th`
+  width: 40em;
 `;
 
-const StyledTD = styled.td.attrs({
+const TD = styled.td.attrs({
   colSpan: 3,
 })`
-  text-align: left;
+  text-align: right;
 `;

@@ -7,6 +7,7 @@ import { OrderSummary } from "../components/OrderSummary";
 import { getCustomerSecret, getCartById } from "../functions/checkout";
 import { useRouter } from "next/router";
 import { Cart } from "../components/interfaces";
+import { AuthorizationController } from "@cheapreats/ts-sdk/dist/app/controllers/AuthorizationController";
 
 declare var process: {
   env: {

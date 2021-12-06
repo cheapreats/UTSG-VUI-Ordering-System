@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 interface TableRowProps {
   name: string;
@@ -13,9 +14,14 @@ export const TableRow: React.VFC<TableRowProps> = ({
 }) => {
   return (
     <tr>
-      <td key={name}> {name}</td>
-      <td key={price}> {price}</td>
-      <td key={quantity}> {quantity}</td>
+      <TD key={name}> {name}</TD>
+      <TD key={price}> ${price}</TD>
+      <TD key={quantity}> {quantity}</TD>
     </tr>
   );
 };
+
+const TD = styled.td`
+  text-align: center;
+  width: 40em;
+`;

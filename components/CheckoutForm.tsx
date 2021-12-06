@@ -5,6 +5,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { Button } from "@cheapreats/react-ui";
 import styled from "styled-components";
 
 export const CheckoutForm = (): React.ReactElement => {
@@ -25,7 +26,7 @@ export const CheckoutForm = (): React.ReactElement => {
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "http://localhost:8080/test",
+        return_url: "http://localhost:8080/success",
         // shipping: {Shipping Object}
       },
     });
@@ -37,10 +38,17 @@ export const CheckoutForm = (): React.ReactElement => {
     // TODO:call back to CheaprEats
   };
 
+  const buttonProps = {
+    full: true,
+    color: "red",
+  };
+
   return (
     <Form onSubmit={handleSubmit}>
       <PaymentElement />
-      <Button disabled={!stripe}>Submit</Button>
+      <StyledButton {...buttonProps} disabled={!stripe}>
+        Pay
+      </StyledButton>
       {errMsg && <div>{errMsg}</div>}
     </Form>
   );
@@ -52,8 +60,6 @@ const Form = styled.form`
   margin-right: auto;
 `;
 
-const Button = styled.button`
-  position: relative;
-  margin-top: 20px;
-  padding 5px;
-;`;
+const StyledButton = styled(Button)`
+  margin-top: 1em;
+`;
