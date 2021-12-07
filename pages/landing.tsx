@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
-import { QRScan, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
+import { QRScan, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
@@ -255,23 +256,6 @@ const Landing: NextPage = () => {
     parseResponse(response.data);
   }
 
-  const getVendorNavigationBarProps = (): INavigationBarProps => ({
-    navigationBarItems: [
-        {
-            label: 'Home',
-        },
-        {
-            label: 'Delivery',
-        },
-        {
-            label: 'PickUp',
-        },
-        {
-            label: 'Cart'
-        },
-    ],
-  })
-
   const getResponse = async (requestText: string) => {
     if (requestText === ''){return false}
     addHighlightedString(highlightifyString(false, requestText, undefined));
@@ -338,42 +322,30 @@ const Landing: NextPage = () => {
 
 
   return (
-    <SuperContainer>
-      <NavigationBarContainer>
-        <img
-          src='https://www.cheapreats.com/static/90939a6dc8dacea8e44d046c72521a1b/16c7d/logo.png'
-          width='50px'
-          alt='CheaprEats logo'
-        />
-        <Heading color='primary'>CheaprEats</Heading>
-        <NavigationBar {...getVendorNavigationBarProps()} />
-      </NavigationBarContainer>
-      <LandingPageContainer>
-        <LandingPageContent>
-          <LandingPage>
-            <ScrollingList>
-              {displayHighlightedText()}
-              {/* <HighlightedText labels={highlightedStrings}>
-              </HighlightedText> */}
-            </ScrollingList>
-            <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
-            <br></br>
-            <Submit onSubmit = {function(submission: string){
-              if (synth) synth.cancel();
-              getResponse(submission)
-            }}/>
-          </LandingPage>
-        </LandingPageContent>
-      </LandingPageContainer>
-    </SuperContainer>
+    <LandingPageContainer>
+      <LandingPageContent>
+        <LandingPage>
+          <ScrollingList>
+            {displayHighlightedText()}
+            {/* <HighlightedText labels={highlightedStrings}>
+            </HighlightedText> */}
+          </ScrollingList>
+          <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
+          <StyledSmallText>OR</StyledSmallText>
+          <Submit onSubmit = {function(submission: string){
+            if (synth) synth.cancel();
+            getResponse(submission)
+          }}/>
+        </LandingPage>
+      </LandingPageContent>
+    </LandingPageContainer>
   );
 };
 
-const NavigationBarContainer = styled.div`
-  ${Mixins.flex('row')};
-`;
 
-const SuperContainer = styled.div`
+const StyledSmallText = styled(SmallText)`
+  display: flex;
+  justify-content: center;
 `;
 
 const ScrollingList = styled.div`
@@ -399,7 +371,7 @@ display: table-cell;
 
 const LandingPage = styled.div`
 width: 60%;
-height: 80vh;
+height: 100%;
 color: #fff;
 background: #eee;
 padding: 1rem;

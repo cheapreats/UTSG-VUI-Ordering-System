@@ -38,6 +38,7 @@ export const Submit: React.FC<SubmitProps> = ({
 
 const Form = styled.form`
   ${Mixins.flex("row")};
+  justify-content: center;
 `;
 
 export default Submit;
