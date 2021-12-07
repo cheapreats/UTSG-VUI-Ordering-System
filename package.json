@@ -24,7 +24,7 @@
     "react-speech-recognition": "^3.9.0",
     "regenerator-runtime": "^0.13.9",
     "stripe": "^8.191.0",
-    "styled-components": "^5.3.3",
+    "styled-components": "^5.3.3"
   },
   "resolutions": {
     "webpack": "5.41.1"
