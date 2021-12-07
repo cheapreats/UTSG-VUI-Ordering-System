@@ -55,10 +55,8 @@ const CheckoutQR = styled.img`
 let imgUrl;
 
 const Landing: NextPage = () => {
-  const [highlightedStrings, setHighlightedStrings] = useState<Array<HighlightedString>>([]);
-  const [numStrings, setNumStrings] = useState<number>(0);
+  const [highlightedStrings, setHighlightedStrings] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
-  const [cart, setCart] = useState<Array<CartItem>>([]);
   const [isBegan, setBegan] = useState<boolean>(false);
 
   const {
@@ -68,8 +66,16 @@ const Landing: NextPage = () => {
   } = useSpeechRecognition();
 
   const nextHighlightedStrings = highlightedStrings.slice()
+  const addElement = (newElement: React.ReactElement): void => {
+    nextHighlightedStrings.push(newElement);
+    setHighlightedStrings([...nextHighlightedStrings]);
+  }
+
   const addHighlightedString = (HString: HighlightedString): void => {
-    nextHighlightedStrings.push(HString);
+
+    const chatBubble = createTextBubble(HString);
+
+    nextHighlightedStrings.push(chatBubble);
     setHighlightedStrings([...nextHighlightedStrings]);
     // setNumStrings(nextHighlightedStrings.length);
   }
@@ -129,6 +135,21 @@ const Landing: NextPage = () => {
   }
 
   const marginSize = '10px'
+  const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {
+    let textBubbleStyle = {
+      maxWidth: '80%',
+      width: 'fit-content',
+      marginLeft: marginSize,
+      marginRight: 'auto',
+    }
+    
+    return (
+      <TextBubble style={textBubbleStyle} fromBot={true}>
+        {QRFrame}
+      </TextBubble>
+    )
+  }
+
   const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
     let margin_left = 'auto'; 
     let margin_right = marginSize;
@@ -136,6 +157,8 @@ const Landing: NextPage = () => {
       margin_left = marginSize; 
       margin_right = 'auto';
     }
+
+    console.log(highlightedString.listItemsBodies)
     
     let textBubbleStyle = {
       maxWidth: '80%',
@@ -154,14 +177,7 @@ const Landing: NextPage = () => {
   const displayHighlightedText = ():React.ReactElement => {
     
     return <>
-      {highlightedStrings.map((_, i) => (
-          // <TextBubble style={{width: 'fit-content'}}>
-          //   <div>
-          //     <HighlightedText labels={[highlightedStrings[i]]}/>
-          //   </div>
-          // </TextBubble>
-          createTextBubble(highlightedStrings[i])
-      ))}
+      {highlightedStrings}
     </>
   }
 
@@ -178,6 +194,7 @@ const Landing: NextPage = () => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
         let res: string = item.payload.message;
+        let isSpecial = true;
 
         let list:Array<any> | undefined = undefined;
         if (item.payload.message.indexOf('[') != -1){
@@ -197,20 +214,22 @@ const Landing: NextPage = () => {
           res = res.replace(''.concat('[', targetVariable, ']'), "");
 
           if (targetVariable == "cartID"){
-            let cartID = response.data.variables[targetVariable];
+            // let cartID = response.data.variables[targetVariable];
             
             //window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
-            //return
 
-            const checkoutURL = "http://localhost:8080/checkout?id=".concat(cartID)
+            // const checkoutURL = "http://localhost:8080/checkout?id=".concat(cartID)
+            const checkoutURL = "https://www.rapidtables.com"
             QRCode.toDataURL(checkoutURL, (err, url) => {
               if (err) {
                 console.error(err);
-              }
-              else {
+              } else {
                 imgUrl = url;
-                list = [<a href={checkoutURL}><QRScan qrDisplay={<CheckoutQR src={imgUrl}/>}/></a>];
-                console.log("Checkout is at: " + checkoutURL);
+                isSpecial = false;
+
+                addElement(
+                  createQRBubble(<a href={checkoutURL}><QRScan qrDisplay={<CheckoutQR src={imgUrl}/>}/></a>)
+                );
               }
             });
 
@@ -223,7 +242,7 @@ const Landing: NextPage = () => {
 
 
         speak(res);
-        addHighlightedString(highlightifyString(true, res, list));
+        addHighlightedString(highlightifyString(isSpecial, res, list));
 
       } else {
         console.warn("Received an unexpected data type: Item - ".concat(item));
@@ -366,7 +385,7 @@ const StyledFieldSet = styled.fieldset`
 
 const ScrollingList = styled.div`
   ${Mixins.scroll}
-  height: 300px; 
+  height: calc(100% - 250px); 
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
@@ -394,7 +413,7 @@ display: table-cell;
 
 const LandingPage = styled.div`
 width: 60%;
-height: 1000px;
+height: 80%;
 color: #fff;
 background: #eee;
 padding: 1rem;
