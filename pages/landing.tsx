@@ -355,7 +355,7 @@ const InputContainer = styled.div`
 `;
 
 const StyledFieldSet = styled.fieldset`
-  border-top: 1px solid #aaa;
+  border-top: 1px solid #8a8a8a;
   border-bottom: none;
   border-left: none;
   border-right: none;
@@ -367,6 +367,8 @@ const StyledFieldSet = styled.fieldset`
 const ScrollingList = styled.div`
   ${Mixins.scroll}
   height: 300px; 
+  background: rgba(238, 238, 238, 0.5);
+  padding: 10px;
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
@@ -384,7 +386,7 @@ const LandingPageContent = styled.div`
 vertical-align: middle;
 display: table-cell;
 
-  background: linear-gradient(#123, #111);
+  background: linear-gradient(#ee2434, #f25e6a);
   min-height: 500px;
   background-attachment: fixed;
   background-position: center;
@@ -395,7 +397,7 @@ display: table-cell;
 const LandingPage = styled.div`
 width: 60%;
 height: 1000px;
-background: #eee;
+background: rgba(238, 238, 238, 0.6);
 padding: 1rem;
 border-radius: 5px;
 min-height: 300px;
