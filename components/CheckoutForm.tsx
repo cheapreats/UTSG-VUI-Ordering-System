@@ -40,13 +40,12 @@ export const CheckoutForm = (): React.ReactElement => {
 
   const buttonProps = {
     full: true,
-    color: "red",
   };
 
   return (
     <Form onSubmit={handleSubmit}>
       <PaymentElement />
-      <StyledButton {...buttonProps} disabled={!stripe}>
+      <StyledButton primary {...buttonProps} disabled={!stripe}>
         Pay
       </StyledButton>
       {errMsg && <div>{errMsg}</div>}

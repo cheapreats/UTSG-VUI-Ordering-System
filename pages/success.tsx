@@ -1,5 +1,7 @@
 import { Heading, SmallText } from "@cheapreats/react-ui";
 import React from "react";
+import styled from "styled-components";
+import Image from "next/image";
 
 export const Success: React.VFC = () => {
   const headingProps = {
@@ -13,15 +15,24 @@ export const Success: React.VFC = () => {
   };
 
   return (
-    <div>
-      <img src={require("../images/logo.jpg")} />
+    <StyledDiv>
+      <Image src={require("../images/logo.jpg")} />
       <Heading {...headingProps}>Thanks for your order!</Heading>
       <SmallText {...smallTextProps}>
         We appreciate your business! If you have any questions, please email
-        <a href="mailto:hello@cheapreats.com">hello@cheapreats.com</a>
+        <A href="mailto:hello@cheapreats.com"> hello@cheapreats.com</A>
       </SmallText>
-    </div>
+    </StyledDiv>
   );
 };
 
 export default Success;
+
+const StyledDiv = styled.div`
+  text-align: center;
+  margin-top: 10em;
+`;
+
+const A = styled.a`
+  color: blue;
+`;

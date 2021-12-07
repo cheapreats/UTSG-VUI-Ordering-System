@@ -8,6 +8,8 @@ import { getCustomerSecret, getCartById } from "../functions/checkout";
 import { useRouter } from "next/router";
 import { Cart } from "../components/interfaces";
 import { AuthorizationController } from "@cheapreats/ts-sdk/dist/app/controllers/AuthorizationController";
+import styled from "styled-components";
+import { Card } from "@cheapreats/react-ui";
 
 declare var process: {
   env: {
@@ -59,15 +61,34 @@ export const Checkout: React.VFC = () => {
   };
 
   return (
-    <>
+    <StyledCard animated>
       {!!cart && <OrderSummary key={cart._id} cart={cart} />}
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm />
         </Elements>
       )}
-    </>
+    </StyledCard>
   );
 };
 
 export default Checkout;
+
+const StyledCard = styled(Card)`
+  width: 50%;
+  margin-top: 3em;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const StyledDiv = styled.div`
+  background-color: white;
+  border-radius: 8px;
+  border: 2px solid black;
+  width: 50%;
+  margin-top: 3em;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 12px 12px 2px 1px rgba(236, 236, 236, 1);
+  padding: 1em;
+`;

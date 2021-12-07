@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import { MenuItem, Cart } from "../components/interfaces";
-import { Heading } from "@cheapreats/react-ui";
+import {
+  Heading,
+  SmallText,
+  Paragraph,
+  OrderTotalCard,
+} from "@cheapreats/react-ui";
 import { TableRow } from "../components/TableRow";
 
 interface OrderSummaryProps {
@@ -57,14 +62,18 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
     return rows;
   };
 
-  const headingProps = {
-    type: "h5",
+  const paragraphProps = {
+    color: "black",
+    bold: true,
+    size: "2em",
     textAlign: "center",
   };
 
   return (
     <div>
-      <Header {...headingProps}>Order Summary</Header>
+      <UnderlinedParagraph {...paragraphProps}>
+        Order Summary
+      </UnderlinedParagraph>
       <OrderTable>
         <tr>
           <TH>Item</TH>
@@ -73,47 +82,48 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
         </tr>
         {renderRows()}
       </OrderTable>
-      <PriceTable>
-        <tr>
-          <TD>Subtotal: ${cart.subtotal.toFixed(2)}</TD>
-        </tr>
-        <tr>
-          <TD>Tax: ${(cart.subtotal * 0.13).toFixed(2)}</TD>
-        </tr>
-        <tr>
-          <TD>Total: ${(cart.subtotal * 1.13).toFixed(2)}</TD>
-        </tr>
-      </PriceTable>
+      <OrderCard
+        orderCardContents={[
+          {
+            name: "Subtotal",
+            price: cart.subtotal.toFixed(2),
+          },
+          {
+            name: "Tax",
+            price: (cart.subtotal * 0.13).toFixed(2),
+          },
+          {
+            isBold: true,
+            name: "Total",
+            price: (cart.subtotal * 1.13).toFixed(2),
+          },
+        ]}
+      />
     </div>
   );
 };
 
-const Header = styled(Heading)`
-  margin-top: 1em;
-  margin-bottom: 1em;
-  text-decoration: underline;
-`;
-
 const OrderTable = styled.table`
-  width: 60%;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 1em;
-`;
-
-const PriceTable = styled.table`
-  width: 50%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 3em;
 `;
 
 const TH = styled.th`
   width: 40em;
 `;
 
-const TD = styled.td.attrs({
-  colSpan: 3,
-})`
-  text-align: right;
+const UnderlinedParagraph = styled(Paragraph)`
+  margin-bottom: 0.5em;
+  text-decoration: underline;
+`;
+
+const OrderCard = styled(OrderTotalCard)`
+  width: 80%;
+  padding: 0.5em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto;
 `;
