@@ -407,9 +407,10 @@ margin-right: auto;
 
 const TextBubble = styled.div<{ fromBot: boolean }>`
 border: 1.5px solid rgba(0,0,0,0.1);
-${({ fromBot }): string =>
+${({ theme, fromBot }): string =>
   fromBot ? `
   border-radius: 20px 20px 20px 5px;
+  background-color:  ${theme.colors['background']};
   ` : 
   `
   border-radius: 20px 20px 5px 20px;
