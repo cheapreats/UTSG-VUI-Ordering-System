@@ -1,7 +1,4 @@
 import type { NextPage } from "next";
-import Link from "next/link";
-import Head from "next/head";
-import Image from "next/image";
 import styled from "styled-components";
 import { Button, Heading, CarouselTestimonial } from "@cheapreats/react-ui";
 import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
@@ -14,36 +11,35 @@ const IMAGE = "https://images.unsplash.com/photo-1604573714289-312a6972f67c?ixli
 
 const CAROUSELCONF = {
   title: "",
-  image: LOGO,
+  image: "",
   reviews: [
-    {testimony: "testimony one", reviewer: "rando one"},
-    {testimony: "testimony two", reviewer: "rando two"},
-    {testimony: "testimony three", reviewer: "rando three"}
+    {testimony: "Follow the instructions of the chat bot", reviewer: ""},
+    {testimony: "Order with your voice or text", reviewer: ""},
+    {testimony: "Scan the QR code to pay", reviewer: ""}
   ],
   autoPlay: true,
   interval: 5000,
   loop: true
 }
 
+const PARALLAXCONF = {
+  blur: {min: -8, max: 8},
+  bgImage: IMAGE,
+  strength: 300
+}
+
 const COLORS = {
   primary: "#EE2434",
-  text: "#4a4a4a"
+  background: "#FFFFFF"
 }
-
-
-export const redirectToOrder = () => {
-  console.log("redirect");
-  window.location.replace("/order");
-}
-
-const scrollOnClick = () => {
-  console.log("Start scrolling");
-}
-
 
 const Home: NextPage = () => {
 
   const scrollRef = useRef();
+
+  const redirectToOrder = () => {
+    window.location.replace("/order");
+  }
 
   const scrollOnClick = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -52,27 +48,26 @@ const Home: NextPage = () => {
   return (
     <div>
       <Parallax
-        blur={{min: -8, max: 8}}
-        bgImage={ IMAGE } 
-        bgStyle={{
-          backgroundSize: "cover"
-        }}
-        strength={300}>
+        blur={ PARALLAXCONF.blur }
+        bgImage={ PARALLAXCONF.bgImage } 
+        strength={ PARALLAXCONF.strength }>
         <Section>
           <Container>
-            <Heading margin="10px" color="black" type="h1" size="3rem" textAlign="center" bold={true} children="Welcome to our Voice Ordering System" lineHeight="1.3" />
-            <Button onClick={redirectToOrder} icon={BagFill} children="Start Ordering" primary={true} iconSize="20px" margin="5px" />
-            <Button onClick={scrollOnClick} icon={InfoCircleFill} children="Learn More" iconSize="20px" margin="5px" />
+            <Heading margin="100px 0 0 0" color="black" type="h1" size="3rem" textAlign="center" bold={ true } children="Welcome to our Voice Ordering System" lineHeight="1.3" inlineStyle="max-width: 80%" />
+            <Section>
+              <Button onClick={ redirectToOrder } icon={ BagFill } children="Start Ordering" primary={ true } iconSize="20px" margin="5px" />
+              <Button onClick={ scrollOnClick } icon={ InfoCircleFill } children="Learn More" iconSize="20px" margin="5px" />
+            </Section>
           </Container>
         </Section>
       </Parallax>
       <Section>
-        <Subsection>
+        <Subsection bgCol={ COLORS.primary }>
           <Img src={ LOGO } />
         </Subsection>
-        <Subsection bgCol={ COLORS.primary }>
-          <Heading type="h1" color="white" bold={true} children="How it works" />
-          <h1 ref={scrollRef}> </h1>
+        <Subsection>
+          <Heading type="h1" color="black" bold={true} children="How it works" />
+          <h1 ref={ scrollRef }></h1>
           <CarouselTestimonial 
             carouselTitle={ CAROUSELCONF.title }
             carouselImage={ CAROUSELCONF.image }
@@ -81,7 +76,7 @@ const Home: NextPage = () => {
             carouselInterval={ CAROUSELCONF.interval }
             isLooping={ CAROUSELCONF.loop }
           />
-          <Button onClick={redirectToOrder} icon={BagFill} children="Start Ordering" iconSize="20px" margin="5px" />
+          <Button onClick={ redirectToOrder } icon={ BagFill } children="Start Ordering" iconSize="20px" margin="5px" />
         </Subsection>
       </Section>
     </div>
@@ -89,9 +84,10 @@ const Home: NextPage = () => {
 };
 
 const Img = styled.img`
-  width: 25%;
-  height: 25%;
-  margin: 15px;
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  background-color: ${COLORS.background};
 `
 
 const Container = styled.div`
@@ -99,9 +95,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 30%;
-  height: 50%;
-  border-radius: 15px;
+  width: 100%;
+  height: 40%;
   background-color: white;
 `
 
@@ -124,6 +119,5 @@ const Subsection = styled.div<{bgCol?: string}>`
   height: 100vh;
   background-color: ${p => p.bgCol || "#FFF"};
 `
-
 
 export default Home;
