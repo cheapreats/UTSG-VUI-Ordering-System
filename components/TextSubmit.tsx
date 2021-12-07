@@ -26,19 +26,28 @@ export const Submit: React.FC<SubmitProps> = ({
   };
   return (
     <Form onSubmit={(evt) => handleSubmit(evt)}>
-      <InputFragment
+      <StyledInputFragment
         type="text"
         id="name"
         placeholder="Type your response..."
-      ></InputFragment>
-      <Button>Submit</Button>
+      ></StyledInputFragment>
+      <StyledButton>Submit</StyledButton>
     </Form>
   );
 };
 
 const Form = styled.form`
-  ${Mixins.flex("row")};
-  justify-content: center;
+  ${Mixins.flex("column")};
+  align-items: center;
+`;
+
+const StyledInputFragment = styled(InputFragment)`
+  width: 50%;
+  margin-bottom: 10px;
+`;
+
+const StyledButton = styled(Button)`
+  width: 30%;
 `;
 
 export default Submit;

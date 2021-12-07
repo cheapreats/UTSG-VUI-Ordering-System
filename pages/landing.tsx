@@ -9,6 +9,7 @@ import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
 import Theme from "@cheapreats/react-ui/dist/Themes/ThemeTemplate";
+import Snowfall from 'react-snowfall';
 const axios = require('axios');
 
 
@@ -35,8 +36,9 @@ const VBStyle = {
   justifyContent: 'center',
   'marginLeft': 'auto',
   'marginRight': 'auto',
-  width: '50%',
-  height: '50px',
+  width: '75px',
+  height: '75px',
+  'border-radius': '50%',
 }
 
 const VBProps: any = {
@@ -140,10 +142,8 @@ const Landing: NextPage = () => {
     }
     
     return (
-      <TextBubble style={textBubbleStyle}>
-        <div>
-          <HighlightedText labels={[highlightedString]}/>
-        </div>
+      <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight}>
+        <HighlightedText labels={[highlightedString]}/>
       </TextBubble>
     )
   }
@@ -324,33 +324,46 @@ const Landing: NextPage = () => {
   return (
     <LandingPageContainer>
       <LandingPageContent>
+        <Snowfall/>
         <LandingPage>
           <ScrollingList>
             {displayHighlightedText()}
             {/* <HighlightedText labels={highlightedStrings}>
             </HighlightedText> */}
           </ScrollingList>
-          <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
-          <StyledSmallText>OR</StyledSmallText>
-          <Submit onSubmit = {function(submission: string){
-            if (synth) synth.cancel();
-            getResponse(submission)
-          }}/>
+          <InputContainer>
+            <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
+            <StyledFieldSet>
+              <legend><SmallText>OR</SmallText></legend>
+            </StyledFieldSet>
+            <Submit onSubmit = {function(submission: string){
+              if (synth) synth.cancel();
+              getResponse(submission)
+            }}/>
+          </InputContainer>
         </LandingPage>
       </LandingPageContent>
     </LandingPageContainer>
   );
 };
 
+const InputContainer = styled.div`
+  justify-content: space-between;
+`;
 
-const StyledSmallText = styled(SmallText)`
-  display: flex;
-  justify-content: center;
+const StyledFieldSet = styled.fieldset`
+  border-top: 1px solid #aaa;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  display: block;
+  text-align: center;
+  margin-top: 10px;
 `;
 
 const ScrollingList = styled.div`
   ${Mixins.scroll}
-  height: calc(100% - 125px); 
+  height: 300px; 
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
@@ -367,11 +380,18 @@ const LandingPageContainer = styled.div`
 const LandingPageContent = styled.div`
 vertical-align: middle;
 display: table-cell;
+
+  background: linear-gradient(#123, #111);
+  min-height: 500px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
 
 const LandingPage = styled.div`
 width: 60%;
-height: 100%;
+height: 1000px;
 color: #fff;
 background: #eee;
 padding: 1rem;
@@ -379,11 +399,20 @@ border-radius: 5px;
 min-height: 300px;
 margin-left: auto;
 margin-right: auto;
+
 `;
 
-const TextBubble = styled.div`
+const TextBubble = styled.div<{ fromBot: boolean }>`
 border: 1.5px solid rgba(0,0,0,0.1);
-border-radius: 20px; 
+${({ fromBot }): string =>
+  fromBot ? `
+  border-radius: 20px 20px 20px 5px;
+  ` : 
+  `
+  border-radius: 20px 20px 5px 20px;
+  background-color: #EE2434;
+  `}
+}
 margin-bottom: 10px;  
 `;
 
