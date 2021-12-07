@@ -395,7 +395,6 @@ display: table-cell;
 const LandingPage = styled.div`
 width: 60%;
 height: 1000px;
-color: #fff;
 background: #eee;
 padding: 1rem;
 border-radius: 5px;
@@ -414,7 +413,7 @@ ${({ theme, fromBot }): string =>
   ` : 
   `
   border-radius: 20px 20px 5px 20px;
-  background-color: #EE2434;
+  background-color: ${theme.colors['primary']};
   `}
 }
 margin-bottom: 10px;  
