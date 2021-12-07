@@ -85,9 +85,11 @@ const Landing: NextPage = () => {
 
     let margin_left = 'auto'; 
     let margin_right = '0';
+    var textColor = 'white';
     if (fromBot) {
       margin_left = '0'; 
       margin_right = 'auto';
+      textColor = 'black';
     }
 
     let isSpecial = false;
@@ -96,7 +98,7 @@ const Landing: NextPage = () => {
     }
 
     const textMarginSize = '10px'
-
+    
     return {
       text: text,
       isSpecial: isSpecial,
@@ -116,6 +118,7 @@ const Landing: NextPage = () => {
       textProps: {
         textAlign: txtAlign,
         type: 'div',
+        color: textColor,
         style:{
           // width: '80%',
           marginLeft: textMarginSize,
