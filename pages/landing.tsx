@@ -168,7 +168,7 @@ const Landing: NextPage = () => {
     }
     
     return (
-      <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight}>
+      <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
         <HighlightedText labels={[highlightedString]}/>
       </TextBubble>
     )
