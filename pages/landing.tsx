@@ -386,7 +386,7 @@ const StyledFieldSet = styled.fieldset`
 const ScrollingList = styled.div`
   ${Mixins.scroll}
   height: calc(100% - 250px);
-  background: rgba(238, 238, 238, 0.5);
+  background: rgba(238, 238, 238, 0.25);
   padding: 10px;
   overflow: hidden; 
   overflow-y: scroll;
