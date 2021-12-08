@@ -2,6 +2,7 @@ import { Heading, SmallText } from "@cheapreats/react-ui";
 import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
+import Snowfall from "react-snowfall";
 
 export const Success: React.VFC = () => {
   const headingProps = {
@@ -16,6 +17,7 @@ export const Success: React.VFC = () => {
 
   return (
     <StyledDiv>
+      <Snowfall color="red" />
       <Image src={require("../images/logo.jpg")} />
       <Heading {...headingProps}>Thanks for your order!</Heading>
       <SmallText {...smallTextProps}>

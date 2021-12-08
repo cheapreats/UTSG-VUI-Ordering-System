@@ -10,6 +10,7 @@ import { Cart } from "../components/interfaces";
 import { AuthorizationController } from "@cheapreats/ts-sdk/dist/app/controllers/AuthorizationController";
 import styled from "styled-components";
 import { Card } from "@cheapreats/react-ui";
+import Snowfall from "react-snowfall";
 
 declare var process: {
   env: {
@@ -62,6 +63,7 @@ export const Checkout: React.VFC = () => {
 
   return (
     <StyledCard animated>
+      <Snowfall color="red" />
       {!!cart && <OrderSummary key={cart._id} cart={cart} />}
       {clientSecret && (
         <Elements stripe={stripePromise} options={options}>
