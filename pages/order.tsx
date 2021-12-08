@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { QRScan, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
+import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
   VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
@@ -214,12 +214,11 @@ const Landing: NextPage = () => {
           res = res.replace(''.concat('[', targetVariable, ']'), "");
 
           if (targetVariable == "cartID"){
-            // let cartID = response.data.variables[targetVariable];
+            let cartID = response.data.variables[targetVariable];
             
             //window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
 
-            // const checkoutURL = "http://localhost:8080/checkout?id=".concat(cartID)
-            const checkoutURL = "https://www.rapidtables.com"
+            const checkoutURL = "http://localhost:8080/checkout?id=".concat(cartID)
             QRCode.toDataURL(checkoutURL, (err, url) => {
               if (err) {
                 console.error(err);
@@ -227,8 +226,16 @@ const Landing: NextPage = () => {
                 imgUrl = url;
                 isSpecial = false;
 
+                let QRArgs:QRScanProps = {
+                  title: 'Checkout',
+                  qrDisplay: <CheckoutQR src={imgUrl}/>,
+                  qrRightContent: (
+                    <SmallText margin="10px">Scan this QR Code to pay with your phone.<br></br>OR, press the QR Code to pay from this device.</SmallText>
+                  ),
+                }
+
                 addElement(
-                  createQRBubble(<a href={checkoutURL}><QRScan qrDisplay={<CheckoutQR src={imgUrl}/>}/></a>)
+                  createQRBubble(<a href={checkoutURL}><QRScan {...QRArgs}/></a>)
                 );
               }
             });
