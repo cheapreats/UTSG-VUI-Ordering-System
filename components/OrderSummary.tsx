@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { MenuItem, Cart } from "../components/interfaces";
 import {
-  Heading,
   SmallText,
   Paragraph,
   OrderTotalCard,
+  OrderItemList,
 } from "@cheapreats/react-ui";
 import { TableRow } from "../components/TableRow";
 
@@ -20,47 +20,23 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
     return <SmallText>Loading...</SmallText>;
   }
 
-  let quantities: {
-    [id: string]: {
-      name: string;
-      price: number;
-      quantity: number;
-    };
-  } = {};
+  let itemList: { name: string; price: string }[] = [];
 
-  const appendToQuantities = (element: { menu_item: MenuItem }) => {
+  const buildItems = (element: { menu_item: MenuItem }) => {
     if (!element.menu_item) {
       return;
     }
 
-    if (!(element.menu_item._id in quantities)) {
-      quantities[element.menu_item._id] = {
-        name: element.menu_item.name,
-        price: element.menu_item.price,
-        quantity: 1,
-      };
-    } else {
-      quantities[element.menu_item._id].quantity += 1;
-    }
+    const item = {
+      name: element.menu_item.name,
+      price: "$" + element.menu_item.price.toString(),
+    };
+
+    itemList.push(item);
   };
 
   // TODO: change to map
-  cart.items.forEach(appendToQuantities);
-
-  const renderRows = () => {
-    let rows = [];
-    for (const row in quantities) {
-      rows.push(
-        <TableRow
-          name={quantities[row].name}
-          price={quantities[row].price}
-          quantity={quantities[row].quantity}
-        />
-      );
-    }
-
-    return rows;
-  };
+  cart.items.forEach(buildItems);
 
   const paragraphProps = {
     color: "black",
@@ -74,14 +50,8 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
       <UnderlinedParagraph {...paragraphProps}>
         Order Summary
       </UnderlinedParagraph>
-      <OrderTable>
-        <tr>
-          <TH>Item</TH>
-          <TH>Price</TH>
-          <TH>Quantity</TH>
-        </tr>
-        {renderRows()}
-      </OrderTable>
+      {}
+      <OrderTable items={itemList} />
       <OrderCard
         orderCardContents={[
           {
@@ -103,7 +73,7 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
   );
 };
 
-const OrderTable = styled.table`
+const OrderTable = styled(OrderItemList)`
   width: 80%;
   margin-left: auto;
   margin-right: auto;
