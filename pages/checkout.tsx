@@ -62,15 +62,17 @@ export const Checkout: React.VFC = () => {
   };
 
   return (
-    <StyledCard animated>
+    <div>
       <Snowfall color="red" />
-      {!!cart && <OrderSummary key={cart._id} cart={cart} />}
-      {clientSecret && (
-        <Elements stripe={stripePromise} options={options}>
-          <CheckoutForm />
-        </Elements>
-      )}
-    </StyledCard>
+      <StyledCard animated>
+        {!!cart && <OrderSummary key={cart._id} cart={cart} />}
+        {clientSecret && (
+          <Elements stripe={stripePromise} options={options}>
+            <CheckoutForm />
+          </Elements>
+        )}
+      </StyledCard>
+    </div>
   );
 };
 
@@ -81,6 +83,7 @@ const StyledCard = styled(Card)`
   margin-top: 3em;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 `;
 
 const StyledDiv = styled.div`
