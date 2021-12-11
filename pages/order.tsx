@@ -134,6 +134,7 @@ const Landing: NextPage = () => {
         type: 'div',
         color: textColor,
         style:{
+          whiteSpace: 'pre-line',
           // width: '80%',
           marginLeft: '2px',
           marginRight: '2px',
@@ -263,13 +264,17 @@ const Landing: NextPage = () => {
 
         let list:Array<any> | undefined = undefined;
         while (res.indexOf('[') != -1){
-          console.warn("Received a list.");
           
           let varIndicatorStart: number = res.indexOf('[')
           let varIndicatorEnd: number = res.indexOf(']')
 
           let targetVariable: string = res.substring(varIndicatorStart + 1, varIndicatorEnd);
-          res = res.replace(''.concat('[', targetVariable, ']'), "");
+          if (targetVariable == 'n'){
+            res = res.replace(''.concat('[', targetVariable, ']'), '\n');
+            continue
+          } else {
+            res = res.replace(''.concat('[', targetVariable, ']'), "");
+          }
 
           if (targetVariable == "highlight"){
             specialRange.begin = varIndicatorStart
