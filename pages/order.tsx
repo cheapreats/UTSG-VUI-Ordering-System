@@ -4,7 +4,7 @@ import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedStr
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Microphone } from '@styled-icons/fa-solid/Microphone';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import QRCode from 'qrcode';
@@ -41,6 +41,11 @@ const VBStyle = {
   'border-radius': '50%',
 }
 
+interface SpecialRange {
+  begin: number,
+  end: number,
+}
+
 const VBProps: any = {
   buttonProps: {
     style: VBStyle,
@@ -52,12 +57,16 @@ const CheckoutQR = styled.img`
   height: 300px;
   border: 1px solid black;
 `
+
+const textMarginSize = '10px'
 let imgUrl;
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [isBegan, setBegan] = useState<boolean>(false);
+
+  // const theme = useTheme();
 
   const {
     transcript,
@@ -80,13 +89,13 @@ const Landing: NextPage = () => {
     // setNumStrings(nextHighlightedStrings.length);
   }
 
-  const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>):HighlightedString => {
+  const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
     let txtAlign = 'right';
     if (fromBot){
       txtAlign = 'left';
-      text = 'Bot:\n' + text;
+      // text = 'Bot:\n' + text;
     } else {
-      text = 'You:\n' + text;
+      // text = 'You:\n' + text;
     }
 
     let margin_left = 'auto'; 
@@ -102,20 +111,19 @@ const Landing: NextPage = () => {
     if (list){
       isSpecial = true;
     }
-
-    const textMarginSize = '10px'
     
     return {
       text: text,
       isSpecial: isSpecial,
+      specialRange: specialRange,
       listItemsBodies: list,
       isRight: fromBot,
       listProps: {
         // dropdownButton: <div/>,
         beginOpen: true,
         right: false,
+        dropdownWidth: '90%',
         style:{
-          // width: '80%',
           left: '1px',
           marginLeft: textMarginSize,
           marginRight: textMarginSize,
@@ -127,8 +135,8 @@ const Landing: NextPage = () => {
         color: textColor,
         style:{
           // width: '80%',
-          marginLeft: textMarginSize,
-          marginRight: textMarginSize,
+          marginLeft: '2px',
+          marginRight: '2px',
         },
       },
     };
@@ -169,7 +177,9 @@ const Landing: NextPage = () => {
     
     return (
       <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
-        <HighlightedText labels={[highlightedString]}/>
+        <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
+          <HighlightedText labels={[highlightedString]}/>
+        </p>
       </TextBubble>
     )
   }
@@ -183,8 +193,8 @@ const Landing: NextPage = () => {
 
   const smallTextifyList = (strings: Array<string>):Array<any> => {
     let smallTexts: Array<any> = []
-    for (var str of strings) {
-      smallTexts.push(<SmallText>{str}</SmallText>);
+    for (let i = 0; i < strings.length; i++) {
+      smallTexts.push(<SmallText>{"".concat((i+1).toString(), ". ", strings[i])}</SmallText>);
     }
     return smallTexts
   }
@@ -196,12 +206,28 @@ const Landing: NextPage = () => {
         let res: string = item.payload.message;
         let isSpecial = true;
 
+        let specialRange:SpecialRange = {
+          begin: 0,
+          end: 0,
+        }
+
         let list:Array<any> | undefined = undefined;
-        if (item.payload.message.indexOf('[') != -1){
+        while (res.indexOf('[') != -1){
           console.warn("Received a list.");
           
-          let varIndicatorStart: number = item.payload.message.indexOf('[')
-          let varIndicatorEnd: number = item.payload.message.indexOf(']')
+          let varIndicatorStart: number = res.indexOf('[')
+          let varIndicatorEnd: number = res.indexOf(']')
+
+          let targetVariable: string = res.substring(varIndicatorStart + 1, varIndicatorEnd);
+          res = res.replace(''.concat('[', targetVariable, ']'), "");
+
+          if (targetVariable == "highlight"){
+            specialRange.begin = varIndicatorStart
+            continue
+          } else if (targetVariable == "\\highlight"){
+            specialRange.end = varIndicatorStart
+            continue
+          }
           
           const response = await axios({
             method: 'GET',
@@ -209,9 +235,6 @@ const Landing: NextPage = () => {
             url: ''.concat('/state/', ver, '/user/', userID),
             headers: { Authorization: apiKey,}
           });
-
-          let targetVariable: string = item.payload.message.substring(varIndicatorStart + 1, varIndicatorEnd);
-          res = res.replace(''.concat('[', targetVariable, ']'), "");
 
           if (targetVariable == "cartID"){
             let cartID = response.data.variables[targetVariable];
@@ -247,9 +270,10 @@ const Landing: NextPage = () => {
           console.log(response.data)
         }
 
+        if (specialRange.end == 0) {specialRange.end = res.length}
 
         speak(res);
-        addHighlightedString(highlightifyString(isSpecial, res, list));
+        addHighlightedString(highlightifyString(isSpecial, res, list, specialRange));
 
       } else {
         console.warn("Received an unexpected data type: Item - ".concat(item));
@@ -287,7 +311,7 @@ const Landing: NextPage = () => {
 
   const getResponse = async (requestText: string) => {
     if (requestText === ''){return false}
-    addHighlightedString(highlightifyString(false, requestText, undefined));
+    addHighlightedString(highlightifyString(false, requestText, undefined, undefined));
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -422,7 +446,7 @@ display: table-cell;
 
 const LandingPage = styled.div`
 width: 60%;
-height: 80%;
+height: 100%;
 background: rgba(238, 238, 238, 0.6);
 padding: 1rem;
 border-radius: 5px;
