@@ -1,3 +1,4 @@
+import Head from "next/head";
 import type { NextPage } from "next";
 import styled from "styled-components";
 import { Button, Heading, CarouselTestimonial } from "@cheapreats/react-ui";
@@ -35,6 +36,8 @@ const COLORS = {
   background: "#FFFFFF",
 };
 
+const ROTDEGREE = 10;
+
 const Home: NextPage = () => {
   const scrollRef = useRef();
 
@@ -46,18 +49,23 @@ const Home: NextPage = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
+
   return (
     <div>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </Head>
       <Parallax
         blur={PARALLAXCONF.blur}
         bgImage={PARALLAXCONF.bgImage}
         strength={PARALLAXCONF.strength}
       >
-        <Snowfall color={COLORS.primary} />
         <Section>
           <Container>
             <Heading
-              margin="100px 0 0 0"
+              margin="0 0 15px 0"
               color="black"
               type="h1"
               size="3rem"
@@ -65,9 +73,8 @@ const Home: NextPage = () => {
               bold={true}
               children="Welcome to our Voice Ordering System"
               lineHeight="1.3"
-              inlineStyle="max-width: 80%"
+              inlineStyle={"max-width: 80%; transform: rotate(" + -ROTDEGREE + "deg)"}
             />
-            <Section>
               <Button
                 onClick={redirectToOrder}
                 icon={BagFill}
@@ -75,6 +82,8 @@ const Home: NextPage = () => {
                 primary={true}
                 iconSize="20px"
                 margin="5px"
+                padding="15px 25px 15px 25px"
+                inlineStyle={"transform: rotate(" + -ROTDEGREE + "deg)"}
               />
               <Button
                 onClick={scrollOnClick}
@@ -82,13 +91,14 @@ const Home: NextPage = () => {
                 children="Learn More"
                 iconSize="20px"
                 margin="5px"
+                inlineStyle={"transform: rotate(" + -ROTDEGREE + "deg)"}
               />
-            </Section>
           </Container>
         </Section>
+        <Snowfall color={COLORS.primary} />
       </Parallax>
       <Section>
-        <Subsection bgCol={COLORS.primary}>
+        <Subsection bgCol={({ theme }) => theme.colors.primary}>
           <Img src={LOGO} />
         </Subsection>
         <Subsection>
@@ -111,6 +121,7 @@ const Home: NextPage = () => {
             onClick={redirectToOrder}
             icon={BagFill}
             children="Start Ordering"
+            primary={true}
             iconSize="20px"
             margin="5px"
           />
@@ -121,10 +132,10 @@ const Home: NextPage = () => {
 };
 
 const Img = styled.img`
-  width: 35%;
-  height: 35%;
+  width: 15%;
+  height: 15%;
   border-radius: 50%;
-  background-color: ${COLORS.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const Container = styled.div`
@@ -132,9 +143,11 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  position: absolute;
+  width: 150%;
   height: 40%;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.background};
+  transform: rotateZ(${ROTDEGREE}deg);
 `;
 
 const Section = styled.div`
