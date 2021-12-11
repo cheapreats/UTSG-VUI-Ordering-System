@@ -327,10 +327,12 @@ const Landing: NextPage = () => {
             });
 
           } else {
+            if (!response.data.variables[targetVariable]){
+              console.warn(targetVariable + ' is not a valid Voiceflow variable.');
+              continue
+            }
             list = smallTextifyList(response.data.variables[targetVariable]);
           }
-
-          console.log(response.data)
         }
 
         if (specialRange.end == 0) {specialRange.end = res.length}
