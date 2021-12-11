@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, IconProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
-import { Microphone } from '@styled-icons/fa-solid/Microphone';
+import { Robot, User, Microphone } from '@styled-icons/fa-solid/';
 import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -161,9 +161,11 @@ const Landing: NextPage = () => {
   const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
     let margin_left = 'auto'; 
     let margin_right = marginSize;
-    if (highlightedString.isRight) {
+    var icon = User;
+    if (highlightedString.isRight) { // highlighted string appears on right of icon
       margin_left = marginSize; 
       margin_right = 'auto';
+      icon = Robot;
     }
 
     console.log(highlightedString.listItemsBodies)
@@ -177,12 +179,35 @@ const Landing: NextPage = () => {
     
     return (
       <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
-        <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
-          <HighlightedText labels={[highlightedString]}/>
-        </p>
+        <TextBubbleContainer>
+          <StyledImg 
+            as={icon}
+            imgSize={50}
+          />
+          <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
+            <HighlightedText labels={[highlightedString]}/>
+          </p>
+        </TextBubbleContainer>
       </TextBubble>
     )
   }
+
+  const TextBubbleContainer = styled.div`
+    ${Mixins.flex('row')};
+    ${Mixins.flex('center')};
+
+    ${({ theme }): string => `
+      padding: ${theme.dimensions.padding.withBorder};
+    `}
+  `;
+
+  const StyledImg = styled.svg<{ imgSize: number }>`
+    ${({ imgSize }) => `
+      width: ${imgSize}px;
+      height: ${imgSize}px;
+    `}
+    border-radius: 999px;
+  `;
 
   const displayHighlightedText = ():React.ReactElement => {
     
@@ -377,7 +402,7 @@ const Landing: NextPage = () => {
   return (
     <LandingPageContainer>
       <LandingPageContent>
-        <Snowfall/>
+        <StyledSnowfall/>
         <LandingPage>
           <ScrollingList>
             {displayHighlightedText()}
@@ -400,6 +425,11 @@ const Landing: NextPage = () => {
   );
 };
 
+const StyledSnowfall = styled(Snowfall)`
+  position: absolute;
+  zIndex: -1;
+`;
+
 const InputContainer = styled.div`
   justify-content: space-between;
 `;
@@ -416,6 +446,10 @@ const StyledFieldSet = styled.fieldset`
 
 const ScrollingList = styled.div`
   ${Mixins.scroll}
+  &::-webkit-scrollbar {
+    background-color: rgba(0, 0, 0, 0);
+  }
+
   height: calc(100% - 250px);
   background: rgba(238, 238, 238, 0.25);
   padding: 10px;
@@ -433,8 +467,8 @@ const LandingPageContainer = styled.div`
 `
 
 const LandingPageContent = styled.div`
-vertical-align: middle;
-display: table-cell;
+  vertical-align: middle;
+  display: table-cell;
 
   background: linear-gradient(#ee2434, #f25e6a);
   min-height: 500px;
@@ -445,18 +479,19 @@ display: table-cell;
 `;
 
 const LandingPage = styled.div`
-width: 60%;
-height: 100%;
-background: rgba(238, 238, 238, 0.6);
-padding: 1rem;
-border-radius: 5px;
-min-height: 300px;
-margin-left: auto;
-margin-right: auto;
-overflow: hidden; 
-overflow-y: auto;
-overflow-wrap: break-word;
-
+  width: 60%;
+  height: 100%;
+  background: rgba(238, 238, 238, 0.6);
+  padding: 1rem;
+  border-radius: 5px;
+  min-height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden; 
+  overflow-y: auto;
+  overflow-wrap: break-word; 
+  position: relative;
+  zIndex: 0;
 `;
 
 const TextBubble = styled.div<{ fromBot: boolean }>`
