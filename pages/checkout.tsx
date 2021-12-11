@@ -62,8 +62,15 @@ export const Checkout: React.VFC = () => {
   };
 
   return (
-    <div>
-      <Snowfall color="red" />
+    <div
+      style={{
+        backgroundColor: "#ff6666",
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+      }}
+    >
+      <Snowfall color="white" />
       <StyledCard animated>
         {!!cart && <OrderSummary key={cart._id} cart={cart} />}
         {clientSecret && (

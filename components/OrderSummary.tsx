@@ -50,7 +50,6 @@ export const OrderSummary: React.VFC<OrderSummaryProps> = ({
       <UnderlinedParagraph {...paragraphProps}>
         Order Summary
       </UnderlinedParagraph>
-      {}
       <OrderTable items={itemList} />
       <OrderCard
         orderCardContents={[
