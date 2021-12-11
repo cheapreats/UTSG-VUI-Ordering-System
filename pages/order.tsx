@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, IconProps, Mixins, BaseStyles, Heading } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Robot, User, Microphone } from '@styled-icons/fa-solid/';
@@ -242,7 +242,7 @@ const Landing: NextPage = () => {
   }
 
   const smallTextifyList = (strings: Array<string>):Array<any> => {
-    let smallTexts: Array<any> = []
+    let smallTexts: Array<any> = [];
     for (let i = 0; i < strings.length; i++) {
       smallTexts.push(<SmallText>{"".concat((i+1).toString(), ". ", strings[i])}</SmallText>);
     }
@@ -430,6 +430,12 @@ const Landing: NextPage = () => {
         <StyledSnowfall/>
         <LandingPage>
           <ScrollingList>
+            <TagGroup tags={[
+              {children: "Place Order"},
+              {children: "Cancel Order"},
+              {children: "List Order"},
+              {children: "Done"},
+            ]} />
             {displayHighlightedText()}
             {/* <HighlightedText labels={highlightedStrings}>
             </HighlightedText> */}
