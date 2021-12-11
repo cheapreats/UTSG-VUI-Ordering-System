@@ -143,6 +143,7 @@ const Landing: NextPage = () => {
   }
 
   const marginSize = '10px'
+  const noMarginSize = '0px'
   const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {
     let textBubbleStyle = {
       maxWidth: '80%',
@@ -160,10 +161,10 @@ const Landing: NextPage = () => {
 
   const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
     let margin_left = 'auto'; 
-    let margin_right = marginSize;
+    let margin_right = noMarginSize;
     var icon = User;
     if (highlightedString.isRight) { // highlighted string appears on right of icon
-      margin_left = marginSize; 
+      margin_left = noMarginSize; 
       margin_right = 'auto';
       icon = Robot;
     }
@@ -175,21 +176,38 @@ const Landing: NextPage = () => {
       width: 'fit-content',
       marginLeft: margin_left,
       marginRight: margin_right,
+      marginTop: '10px',
     }
     
-    return (
-      <TextBubbleContainer >
-        <StyledImg 
-              as={icon}
-              imgSize={50}
-        />
-        <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
-            <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
-              <HighlightedText labels={[highlightedString]}/>
-            </p>
-        </TextBubble>
-      </TextBubbleContainer>
-    )
+    if (highlightedString.isRight){
+      return (
+        <TextBubbleContainer style={textBubbleStyle} >
+          <StyledImg 
+                as={icon}
+                imgSize={50}
+          />
+          <TextBubble fromBot={highlightedString.isRight || false}>
+              <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
+                <HighlightedText labels={[highlightedString]}/>
+              </p>
+          </TextBubble>
+        </TextBubbleContainer>
+      )
+    } else {
+      return (
+        <TextBubbleContainer style={textBubbleStyle} >
+          <TextBubble fromBot={highlightedString.isRight || false}>
+              <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
+                <HighlightedText labels={[highlightedString]}/>
+              </p>
+          </TextBubble>
+          <StyledImg 
+                as={icon}
+                imgSize={50}
+          />
+        </TextBubbleContainer>
+      )
+    }
   }
 
   const TextBubbleContainer = styled.div`
@@ -208,7 +226,7 @@ const Landing: NextPage = () => {
       width: ${imgSize}px;
       height: ${imgSize}px;
     `}
-    margin-left: auto;
+    margin-left: 10px;
     margin-right: 10px;
 
     border-radius: 999px;
