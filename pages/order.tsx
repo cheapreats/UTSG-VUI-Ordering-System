@@ -178,17 +178,17 @@ const Landing: NextPage = () => {
     }
     
     return (
-      <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
-        <TextBubbleContainer>
-          <StyledImg 
-            as={icon}
-            imgSize={50}
-          />
-          <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
-            <HighlightedText labels={[highlightedString]}/>
-          </p>
-        </TextBubbleContainer>
-      </TextBubble>
+      <TextBubbleContainer >
+        <StyledImg 
+              as={icon}
+              imgSize={50}
+        />
+        <TextBubble style={textBubbleStyle} fromBot={highlightedString.isRight || false}>
+            <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
+              <HighlightedText labels={[highlightedString]}/>
+            </p>
+        </TextBubble>
+      </TextBubbleContainer>
     )
   }
 
@@ -196,17 +196,24 @@ const Landing: NextPage = () => {
     ${Mixins.flex('row')};
     ${Mixins.flex('center')};
 
+    margin-top: -20px;
+    margin-bottom: -20px;
     ${({ theme }): string => `
       padding: ${theme.dimensions.padding.withBorder};
     `}
   `;
 
-  const StyledImg = styled.svg<{ imgSize: number }>`
+  const StyledImg = styled.svg<{ imgSize: number}>`
     ${({ imgSize }) => `
       width: ${imgSize}px;
       height: ${imgSize}px;
     `}
+    margin-left: auto;
+    margin-right: 10px;
+
     border-radius: 999px;
+    border-style: solid;
+    padding: 10px;
   `;
 
   const displayHighlightedText = ():React.ReactElement => {
