@@ -283,6 +283,12 @@ const Landing: NextPage = () => {
             specialRange.end = varIndicatorStart
             continue
           } else if (targetVariable == 'main menu'){
+            <TagGroup tags={[
+              {children: "Place Order"},
+              {children: "Cancel Order"},
+              {children: "List Order"},
+              {children: "Done"},
+            ]} />
             continue;
           }
           
