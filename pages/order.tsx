@@ -282,6 +282,13 @@ const Landing: NextPage = () => {
           } else if (targetVariable == "\\highlight"){
             specialRange.end = varIndicatorStart
             continue
+          } else if (targetVariable == 'main menu'){
+            <TagGroup tags={[
+              {children: "Place Order"},
+              {children: "Cancel Order"},
+              {children: "List Order"},
+              {children: "Done"},
+            ]} />
           }
           
           const response = await axios({
@@ -435,12 +442,6 @@ const Landing: NextPage = () => {
         <StyledSnowfall/>
         <LandingPage>
           <ScrollingList>
-            <TagGroup tags={[
-              {children: "Place Order"},
-              {children: "Cancel Order"},
-              {children: "List Order"},
-              {children: "Done"},
-            ]} />
             {displayHighlightedText()}
             {/* <HighlightedText labels={highlightedStrings}>
             </HighlightedText> */}
