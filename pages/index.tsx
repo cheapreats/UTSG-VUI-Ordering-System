@@ -3,13 +3,14 @@ import styled from "styled-components";
 import { Button, Heading, CarouselTestimonial } from "@cheapreats/react-ui";
 import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
 import { Parallax } from "react-parallax";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Snowfall from "react-snowfall";
 
 const LOGO =
   "https://www.cheapreats.com/static/90939a6dc8dacea8e44d046c72521a1b/16c7d/logo.png";
 const IMAGE =
   "https://images.unsplash.com/photo-1604573714289-312a6972f67c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80";
+const ROTDEGREE = -3;
 
 const CAROUSELCONF = {
   title: "",
@@ -37,7 +38,6 @@ const COLORS = {
 
 const Home: NextPage = () => {
   const scrollRef = useRef();
-
   const redirectToOrder = () => {
     window.location.replace("/order");
   };
@@ -46,6 +46,7 @@ const Home: NextPage = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
+
   return (
     <div>
       <Parallax
@@ -53,11 +54,10 @@ const Home: NextPage = () => {
         bgImage={PARALLAXCONF.bgImage}
         strength={PARALLAXCONF.strength}
       >
-        <Snowfall color={COLORS.primary} />
         <Section>
           <Container>
             <Heading
-              margin="100px 0 0 0"
+              margin="0 0 10px 0"
               color="black"
               type="h1"
               size="3rem"
@@ -65,9 +65,8 @@ const Home: NextPage = () => {
               bold={true}
               children="Welcome to our Voice Ordering System"
               lineHeight="1.3"
-              inlineStyle="max-width: 80%"
+              inlineStyle="max-width: 80%; z-index: 1"
             />
-            <Section>
               <Button
                 onClick={redirectToOrder}
                 icon={BagFill}
@@ -83,9 +82,9 @@ const Home: NextPage = () => {
                 iconSize="20px"
                 margin="5px"
               />
-            </Section>
           </Container>
         </Section>
+        <Snowfall color={COLORS.primary} />
       </Parallax>
       <Section>
         <Subsection bgCol={COLORS.primary}>
@@ -113,6 +112,7 @@ const Home: NextPage = () => {
             children="Start Ordering"
             iconSize="20px"
             margin="5px"
+            primary={true}
           />
         </Subsection>
       </Section>
@@ -121,20 +121,26 @@ const Home: NextPage = () => {
 };
 
 const Img = styled.img`
-  width: 35%;
-  height: 35%;
+  width: 15%;
+  height: 15%;
   border-radius: 50%;
   background-color: ${COLORS.background};
 `;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 40%;
-  background-color: white;
+  :before {
+    content: '';
+    position: absolute;
+    left: -10;
+    width: 150vw;
+    height: 40%;
+    background-color: ${({ theme }) => theme.colors.background};
+    transform: rotateZ(${ROTDEGREE}deg);
+  }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 `;
 
 const Section = styled.div`
