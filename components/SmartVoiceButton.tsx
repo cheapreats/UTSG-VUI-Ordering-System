@@ -39,7 +39,9 @@ export const SmartVoiceButton: React.FC<VoiceButtonProps> = ({
             javascriptNode.connect(audioContext.destination);
             javascriptNode.onaudioprocess = function() {
                 
-                if (analyser){
+                if (!isWaiting){
+
+                } else if (analyser){
                     var array = new Uint8Array(analyser.frequencyBinCount);
                     analyser?.getByteFrequencyData(array);
                     var values = 0;
@@ -53,6 +55,10 @@ export const SmartVoiceButton: React.FC<VoiceButtonProps> = ({
         
                     // console.log(isWaiting);
                     if (!isWaiting) average = 0;
+
+                    // average = 100*(Math.log10(average/2 + 1)/2)
+                    average = 100*(-1/(1+Math.exp((average - 20)/10)) + 1 - 0.11)
+
                     setVolume(average.toString() + "%");
                 }
             
@@ -91,6 +97,9 @@ export const SmartVoiceButton: React.FC<VoiceButtonProps> = ({
         
         isWaiting = !isWaiting;
         // console.log("I've been clicked.", isWaiting);
+        if (!isWaiting){
+            setVolume('0%')
+        }
 
         if (onClick) onClick(event);
     }
