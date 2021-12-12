@@ -3,7 +3,7 @@ import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedStr
   VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup, Tag } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
-import { Robot, User, Microphone } from '@styled-icons/fa-solid/';
+import { Robot, User, Microphone, DotCircle } from '@styled-icons/fa-solid/';
 import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -20,6 +20,9 @@ const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
 
 const mainFramePadding = '1rem'
+const iconSize = 50
+const standardMarginSize = '10px'
+const noMarginSize = '0px'
 
 const VBArgs = {
   disabled: false,
@@ -63,6 +66,10 @@ const CheckoutQR = styled.img`
 const textMarginSize = '10px'
 let imgUrl;
 
+
+
+
+
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
@@ -75,11 +82,10 @@ const Landing: NextPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
     if (scrollRef && scrollRef.current){
-      console.log(scrollRef)
-      scrollRef.current.scrollTo({ 
-          top: scrollRef.current.scrollHeight, 
-          behavior: 'smooth'
-        })
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight, 
+        behavior: 'smooth'
+      })
     }
   }
   
@@ -95,6 +101,13 @@ const Landing: NextPage = () => {
     setHighlightedStrings([...nextHighlightedStrings]);
   }
 
+  useEffect(() => {
+    // scrollToBottom();
+    if (true){
+      setTimeout(() => { scrollToBottom(); }, 400);
+    }
+  },[highlightedStrings])
+
   const addHighlightedString = (HString: HighlightedString): void => {
 
     const chatBubble = createTextBubble(HString);
@@ -102,8 +115,6 @@ const Landing: NextPage = () => {
     nextHighlightedStrings.push(chatBubble);
     setHighlightedStrings([...nextHighlightedStrings]);
     // setNumStrings(nextHighlightedStrings.length);
-
-    scrollToBottom();
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
@@ -160,26 +171,19 @@ const Landing: NextPage = () => {
     };
   }
 
-  const marginSize = '10px'
-  const noMarginSize = '0px'
-  const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {
-    let textBubbleStyle = {
-      maxWidth: '80%',
-      width: 'fit-content',
-      marginLeft: marginSize,
-      marginTop: marginSize,
-      marginRight: 'auto',
-    }
-    
+  const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {    
     return (
-      <TextBubble style={textBubbleStyle} fromBot={true}>
-        {QRFrame}
-      </TextBubble>
+      <TextBubbleContainer fromBot={true}>
+        <TextBubble fromBot={true}>
+          {QRFrame}
+        </TextBubble>
+      </TextBubbleContainer>
     )
   }
 
   const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
-    let margin_left = 'auto'; 
+    let container_margin_left = 'auto'; 
+    let margin_left = 'auto';
     let margin_right = noMarginSize;
     var icon = User;
     if (highlightedString.isRight) { // highlighted string appears on right of icon
@@ -189,23 +193,16 @@ const Landing: NextPage = () => {
     }
 
     console.log(highlightedString.listItemsBodies)
-    
-    let textBubbleStyle = {
-      maxWidth: '80%',
-      width: 'fit-content',
-      marginLeft: margin_left,
-      marginRight: margin_right,
-      marginTop: marginSize,
-    }
-    
+
     if (highlightedString.isRight){
       return (
-        <TextBubbleContainer style={textBubbleStyle} >
+        <TextBubbleContainer fromBot={true}>
           <StyledImg 
+                fromBot={true}
                 as={icon}
-                imgSize={50}
+                imgSize={iconSize}
           />
-          <TextBubble fromBot={highlightedString.isRight || false}>
+          <TextBubble fromBot={true}>
               <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
                 <HighlightedText labels={[highlightedString]}/>
               </p>
@@ -214,44 +211,21 @@ const Landing: NextPage = () => {
       )
     } else {
       return (
-        <TextBubbleContainer style={textBubbleStyle} >
-          <TextBubble fromBot={highlightedString.isRight || false}>
+        <TextBubbleContainer fromBot={false}>
+          <TextBubble fromBot={false}>
               <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
                 <HighlightedText labels={[highlightedString]}/>
               </p>
           </TextBubble>
           <StyledImg 
+                fromBot={false}
                 as={icon}
-                imgSize={50}
+                imgSize={iconSize}
           />
         </TextBubbleContainer>
       )
     }
   }
-
-  const TextBubbleContainer = styled.div`
-    ${Mixins.flex('row')};
-    ${Mixins.flex('center')};
-
-    margin-top: -20px;
-    margin-bottom: -20px;
-    ${({ theme }): string => `
-      padding: ${theme.dimensions.padding.withBorder};
-    `}
-  `;
-
-  const StyledImg = styled.svg<{ imgSize: number}>`
-    ${({ imgSize }) => `
-      width: ${imgSize}px;
-      height: ${imgSize}px;
-    `}
-    margin-left: 10px;
-    margin-right: 10px;
-
-    border-radius: 999px;
-    border-style: solid;
-    padding: 10px;
-  `;
 
   const displayHighlightedText = ():React.ReactElement => {
     
@@ -471,7 +445,7 @@ const Landing: NextPage = () => {
       if (index === tags.length - 1) {
           tagPieceProps.position = 'right';
       }
-      tagComponents.push(<StyledTag onClick = {function() {submitResponse(tag)} } {...tagPieceProps} >
+      tagComponents.push(<StyledTag icon={DotCircle} onClick = {function() {submitResponse(tag)} } {...tagPieceProps} >
         {tag}
       </StyledTag>);
     });
@@ -543,9 +517,9 @@ const StyledFieldSet = styled.fieldset`
 const InputContainer = styled.div`
   ${Mixins.flex('column')};
   position: absolute;
-  top: calc(100% - 300px);
+  top: calc(100% - 150px);
   width: calc(100% - calc(${mainFramePadding} * 2));
-  height: calc(275px);
+  height: calc(125px);
   justify-content: end;
 `;
 
@@ -564,15 +538,16 @@ const ScrollingList = styled.div<{optionsAvailable?: boolean}>`
   ${({ optionsAvailable }): string =>
   optionsAvailable
     ? `
-    animation: grow 0.15s ease-out 1;
+    animation: grow 0.18s ease-out 1;
     height: calc(100% - 275px);
   `
   : `
-    animation: shrink 0.15s ease-in 1;
+    animation: shrink 0.18s ease-in 1;
     height: calc(100% - 235px);
   `}
   background: rgba(238, 238, 238, 0.25);
-  padding: 10px;
+  padding: 5px;
+  padding-top: 25px;
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
@@ -632,19 +607,81 @@ const LandingPage = styled.div`
   zIndex: 0;
 `;
 
-const TextBubble = styled.div<{ fromBot: boolean }>`
-border: 1.5px solid rgba(0,0,0,0.1);
-${({ theme, fromBot }): string =>
+const container_margin = '10px'
+const TextBubbleContainer = styled.div<{fromBot: boolean}>`
+  ${Mixins.flex('row')};
+  ${Mixins.flex('center')};
+  position: relative;
+
+  maxWidth: '80%';
+  width: 'fit-content';
+  ${({ fromBot }): string => 
   fromBot ? `
-  border-radius: 20px 20px 20px 5px;
-  background-color:  ${theme.colors['background']};
+    justify-content: left;
+    margin-left: 0px;
+    margin-right: ${container_margin};
   ` : 
   `
-  border-radius: 20px 20px 5px 20px;
-  background-color: ${theme.colors['primary']};
+    justify-content: right;
+    margin-left: ${container_margin};
+    margin-right: 0px;
   `}
-}
-margin-bottom: 10px;  
+  marginTop: standardMarginSize;
+
+  margin-top: -20px;
+  margin-bottom: 20px;
+  ${({ theme }): string => `
+    padding: ${theme.dimensions.padding.withBorder};
+  `}
+`;
+
+const bubble_margin = '50px'
+const TextBubble = styled.div<{ fromBot: boolean }>`
+  ${({ fromBot }): string => 
+  fromBot ? `
+    margin-left: ${bubble_margin};
+    margin-right: 0px;
+  ` : 
+  `
+    margin-left: 0px;
+    margin-right: ${bubble_margin};
+  `}
+  border: 1.5px solid rgba(0,0,0,0.1);
+  ${({ theme, fromBot }): string =>
+    fromBot ? `
+    border-radius: 20px 20px 20px 5px;
+    background-color:  ${theme.colors['background']};
+    ` : 
+    `
+    border-radius: 20px 20px 5px 20px;
+    background-color: ${theme.colors['primary']};
+    `}
+  }
+  margin-bottom: 10px;  
+`;
+
+const StyledImg = styled.svg<{ imgSize: number, fromBot: boolean}>`
+  ${({ fromBot }): string => 
+  fromBot ? `
+    bottom: calc(0px);
+    left: calc(0px);
+  ` : 
+  `
+    bottom: calc(0px);
+    right: calc(0px);
+  `}
+
+  position: absolute;
+  ${({ imgSize }) => `
+    width: ${imgSize}px;
+    height: ${imgSize}px;
+  `}
+  margin-left: 10px;
+  margin-right: 10px;
+
+  border-radius: 999px;
+  border-style: solid;
+  padding: 10px;
 `;
 
 export default Landing;
