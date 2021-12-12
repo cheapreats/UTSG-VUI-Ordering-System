@@ -48,7 +48,7 @@ export const Submit: React.FC<SubmitProps> = ({
         id="name"
         placeholder="Type your response..."
       ></StyledInputFragment>
-      <StyledButton hasText={hasText}>Submit</StyledButton>
+      <StyledButton hasText={hasText} primary={true} disabled={!hasText}>Submit</StyledButton>
     </Form>
   );
 };
@@ -67,9 +67,9 @@ const StyledButton = styled(Button)<{ hasText: boolean }>`
   width: 30%;
   ${({ theme, hasText }): string =>
     hasText ? 
-    `background-color:  ${theme.colors['primary']};
-    color: ${theme.colors['background']};` :
-    `background-color: ${theme.colors['background']};`
+    `` :
+    `color: ${theme.colors['primary']};
+    background-color: ${theme.colors['background']};`
   }
 `;
 
