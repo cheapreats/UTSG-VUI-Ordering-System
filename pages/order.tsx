@@ -68,6 +68,18 @@ const Landing: NextPage = () => {
 
   // const theme = useTheme();
 
+  //auto scroll to bottom
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollToBottom = () => {
+    if (scrollRef && scrollRef.current){
+      console.log(scrollRef)
+      scrollRef.current.scrollTo({ 
+          top: scrollRef.current.scrollHeight, 
+          behavior: 'smooth'
+        })
+    }
+  }
+  
   const {
     transcript,
     listening,
@@ -87,6 +99,8 @@ const Landing: NextPage = () => {
     nextHighlightedStrings.push(chatBubble);
     setHighlightedStrings([...nextHighlightedStrings]);
     // setNumStrings(nextHighlightedStrings.length);
+
+    scrollToBottom();
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
@@ -308,7 +322,7 @@ const Landing: NextPage = () => {
                   title: 'Checkout',
                   qrDisplay: <CheckoutQR src={imgUrl}/>,
                   qrRightContent: (
-                    <SmallText margin="10px">Scan this QR Code to pay with your phone.<br></br>OR, press the QR Code to pay from this device.</SmallText>
+                    <SmallText margin="10px">Scan this QR Code to pay with your phone.<br/>OR, press the QR Code to pay from this device.</SmallText>
                   ),
                 }
 
@@ -436,7 +450,7 @@ const Landing: NextPage = () => {
       <LandingPageContent>
         <StyledSnowfall/>
         <LandingPage>
-          <ScrollingList>
+          <ScrollingList ref={scrollRef}>
             {displayHighlightedText()}
             {/* <HighlightedText labels={highlightedStrings}>
             </HighlightedText> */}
