@@ -282,13 +282,7 @@ const Landing: NextPage = () => {
           } else if (targetVariable == "\\highlight"){
             specialRange.end = varIndicatorStart
             continue
-          } else if (targetVariable == 'main menu'){
-            <TagGroup tags={[
-              {children: "Place Order"},
-              {children: "Cancel Order"},
-              {children: "List Order"},
-              {children: "Done"},
-            ]} />
+          } else if (targetVariable == 'main menu'){ // bot prints menu options
             continue;
           }
           
@@ -454,9 +448,15 @@ const Landing: NextPage = () => {
             <StyledFieldSet>
               <legend><SmallText>OR</SmallText></legend>
             </StyledFieldSet>
+            <StyledTagGroup tags={[
+              {children: "Place Order"},
+              {children: "Cancel Order"},
+              {children: "List Order"},
+              {children: "Done"},
+            ]} />
             <Submit onSubmit = {function(submission: string){
               if (synth) synth.cancel();
-              getResponse(submission)
+              getResponse(submission);
             }}/>
           </InputContainer>
         </LandingPage>
@@ -465,13 +465,19 @@ const Landing: NextPage = () => {
   );
 };
 
+const StyledTagGroup = styled(TagGroup)`
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+`;
+
 const StyledSnowfall = styled(Snowfall)`
   position: absolute;
   zIndex: -1;
 `;
 
 const InputContainer = styled.div`
-  justify-content: space-between;
+  ${Mixins.flex('column')};
 `;
 
 const StyledFieldSet = styled.fieldset`
