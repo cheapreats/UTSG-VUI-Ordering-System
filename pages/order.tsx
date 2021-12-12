@@ -484,12 +484,14 @@ const Landing: NextPage = () => {
       <LandingPageContent>
         <StyledSnowfall/>
         <LandingPage>
-          <Popup isFocused={isFocused}>
-            <h1>Hey there User!</h1>
-            <PriceDisplay>${price}</PriceDisplay>
-          </Popup>
+          <PopupContainer onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse}>
+            <Popup isHovered={isFocused}>
+              <h1>Hey there User!</h1>
+              <PriceDisplay>${price}</PriceDisplay>
+            </Popup>
+          </PopupContainer>
           <TopBox>
-            <ScrollingList onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse} ref={scrollRef} optionsAvailable={resOptions.length > 0}>
+            <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
               {displayHighlightedText()}
               {/* <HighlightedText labels={highlightedStrings}>
               </HighlightedText> */}
@@ -534,11 +536,19 @@ const PriceDisplay = styled.div`
   `}
 `;
 
-const Popup = styled.div<{isFocused: boolean}>`
-  ${Mixins.flex('row')};
+const PopupContainer = styled.div`
   position: absolute;
-  top: 0;
-  height: 10%;
+  top: 0%;
+  width: 100%;
+  height: 20%;
+  z-index: 2;
+`;
+
+const Popup = styled.div<{isHovered: boolean}>`
+  ${Mixins.flex('row')};
+  position: relative;
+  top: -50%;
+  height: 50%;
   width: calc(100% - 2rem);
   ${({ theme }): string => `
     background-color: ${theme.colors['background']};
@@ -546,18 +556,34 @@ const Popup = styled.div<{isFocused: boolean}>`
   box-shadow: 0 1mm 5mm;
   padding: 10px;
   z-index: 2;
-  transition: transform 300ms;
-  transform: translate3d(0, -80%, 0);
 
-  ${({isFocused}): string => 
-    isFocused ? `
-    transition: transform 300ms;
-    transform: translate3d(0, 0%, 0);
+  transition: 0.5s;
+
+  ${({ isHovered }): string =>
+  isHovered
+    ? `
+    animation: fall 0.18s ease-out 1;
+    top: calc(0%);
   `
-  : ``}
-  &:hover, &:focus {
-    transition: transform 300ms;
-    transform: translate3d(0, 0%, 0);
+  : `
+  `}
+
+  @keyframes rise {
+    from {
+      top: calc(0%);
+    }
+    to {
+      top: calc(-50%);
+    }
+  }
+
+  @keyframes fall {
+    from {
+      top: calc(-50%);
+    }
+    to {
+      top: calc(0%);
+    }
   }
 `;
 
