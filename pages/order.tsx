@@ -3,7 +3,7 @@ import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedStr
   VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup, Tag } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
-import { Robot, User, Microphone } from '@styled-icons/fa-solid/';
+import { Robot, User, Microphone, DotCircle } from '@styled-icons/fa-solid/';
 import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -18,6 +18,11 @@ const ver = '61a45af9bb4f63000637acef';
 const VFBaseURL = 'https://general-runtime.voiceflow.com';
 const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
+
+const mainFramePadding = '1rem'
+const iconSize = 50
+const standardMarginSize = '10px'
+const noMarginSize = '0px'
 
 const VBArgs = {
   disabled: false,
@@ -61,10 +66,15 @@ const CheckoutQR = styled.img`
 const textMarginSize = '10px'
 let imgUrl;
 
+
+
+
+
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [isBegan, setBegan] = useState<boolean>(false);
+  const [resOptions, setResOptions] = useState<Array<string>>([]);
 
   // const theme = useTheme();
 
@@ -72,11 +82,10 @@ const Landing: NextPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
     if (scrollRef && scrollRef.current){
-      console.log(scrollRef)
-      scrollRef.current.scrollTo({ 
-          top: scrollRef.current.scrollHeight, 
-          behavior: 'smooth'
-        })
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight, 
+        behavior: 'smooth'
+      })
     }
   }
   
@@ -92,6 +101,13 @@ const Landing: NextPage = () => {
     setHighlightedStrings([...nextHighlightedStrings]);
   }
 
+  useEffect(() => {
+    // scrollToBottom();
+    if (true){
+      setTimeout(() => { scrollToBottom(); }, 400);
+    }
+  },[highlightedStrings])
+
   const addHighlightedString = (HString: HighlightedString): void => {
 
     const chatBubble = createTextBubble(HString);
@@ -99,8 +115,6 @@ const Landing: NextPage = () => {
     nextHighlightedStrings.push(chatBubble);
     setHighlightedStrings([...nextHighlightedStrings]);
     // setNumStrings(nextHighlightedStrings.length);
-
-    scrollToBottom();
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
@@ -158,25 +172,19 @@ const Landing: NextPage = () => {
     };
   }
 
-  const marginSize = '10px'
-  const noMarginSize = '0px'
-  const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {
-    let textBubbleStyle = {
-      maxWidth: '80%',
-      width: 'fit-content',
-      marginLeft: marginSize,
-      marginRight: 'auto',
-    }
-    
+  const createQRBubble = (QRFrame: React.ReactElement):React.ReactElement => {    
     return (
-      <TextBubble style={textBubbleStyle} fromBot={true}>
-        {QRFrame}
-      </TextBubble>
+      <TextBubbleContainer fromBot={true}>
+        <TextBubble fromBot={true}>
+          {QRFrame}
+        </TextBubble>
+      </TextBubbleContainer>
     )
   }
 
   const createTextBubble = (highlightedString: HighlightedString):React.ReactElement => {
-    let margin_left = 'auto'; 
+    let container_margin_left = 'auto'; 
+    let margin_left = 'auto';
     let margin_right = noMarginSize;
     var icon = User;
     if (highlightedString.isRight) { // highlighted string appears on right of icon
@@ -186,23 +194,16 @@ const Landing: NextPage = () => {
     }
 
     console.log(highlightedString.listItemsBodies)
-    
-    let textBubbleStyle = {
-      maxWidth: '80%',
-      width: 'fit-content',
-      marginLeft: margin_left,
-      marginRight: margin_right,
-      marginTop: '10px',
-    }
-    
+
     if (highlightedString.isRight){
       return (
-        <TextBubbleContainer style={textBubbleStyle} >
+        <TextBubbleContainer fromBot={true}>
           <StyledImg 
+                fromBot={true}
                 as={icon}
-                imgSize={50}
+                imgSize={iconSize}
           />
-          <TextBubble fromBot={highlightedString.isRight || false}>
+          <TextBubble fromBot={true}>
               <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
                 <HighlightedText labels={[highlightedString]}/>
               </p>
@@ -211,44 +212,21 @@ const Landing: NextPage = () => {
       )
     } else {
       return (
-        <TextBubbleContainer style={textBubbleStyle} >
-          <TextBubble fromBot={highlightedString.isRight || false}>
+        <TextBubbleContainer fromBot={false}>
+          <TextBubble fromBot={false}>
               <p style={{marginLeft: textMarginSize, marginRight: textMarginSize}}>
                 <HighlightedText labels={[highlightedString]}/>
               </p>
           </TextBubble>
           <StyledImg 
+                fromBot={false}
                 as={icon}
-                imgSize={50}
+                imgSize={iconSize}
           />
         </TextBubbleContainer>
       )
     }
   }
-
-  const TextBubbleContainer = styled.div`
-    ${Mixins.flex('row')};
-    ${Mixins.flex('center')};
-
-    margin-top: -20px;
-    margin-bottom: -20px;
-    ${({ theme }): string => `
-      padding: ${theme.dimensions.padding.withBorder};
-    `}
-  `;
-
-  const StyledImg = styled.svg<{ imgSize: number}>`
-    ${({ imgSize }) => `
-      width: ${imgSize}px;
-      height: ${imgSize}px;
-    `}
-    margin-left: 10px;
-    margin-right: 10px;
-
-    border-radius: 999px;
-    border-style: solid;
-    padding: 10px;
-  `;
 
   const displayHighlightedText = ():React.ReactElement => {
     
@@ -265,7 +243,7 @@ const Landing: NextPage = () => {
     return smallTexts
   }
 
-
+  //parse the bot's response
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
@@ -298,6 +276,7 @@ const Landing: NextPage = () => {
             specialRange.end = varIndicatorStart
             continue
           } else if (targetVariable == 'main menu'){ // bot prints menu options
+            setResOptions(start_tags)
             continue;
           }
           
@@ -337,9 +316,8 @@ const Landing: NextPage = () => {
             
 
           } 
-          else if (targetVariable == 'price') {
-            console.log("nice");
-            setPrice(response.data.variables[targetVariable]);
+          else if (targetVariable == 'foodItemPrice') { // update order summary
+            setPrice(prevPrice => prevPrice + response.data.variables[targetVariable]);
           }
           else {
             if (!response.data.variables[targetVariable]){
@@ -361,6 +339,7 @@ const Landing: NextPage = () => {
     }
   }
 
+  //called to get the first bot message
   const initVF = async () => {
     
     const reqBody = {
@@ -389,9 +368,11 @@ const Landing: NextPage = () => {
     parseResponse(response.data);
   }
 
+  //get the bot's response to a request the user sent
   const getResponse = async (requestText: string) => {
     if (requestText === ''){return false}
     addHighlightedString(highlightifyString(false, requestText, undefined, undefined));
+    setResOptions([]);
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -458,7 +439,7 @@ const Landing: NextPage = () => {
     getResponse(submission);
   }
 
-  var tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
+  var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
 
   const displayTags = (tags: string[]) => {
     var tagComponents: React.ReactElement[] = [];
@@ -470,36 +451,38 @@ const Landing: NextPage = () => {
       if (index === tags.length - 1) {
           tagPieceProps.position = 'right';
       }
-      tagComponents.push(<StyledTag onClick = {function() {submitResponse(tag)} } {...tagPieceProps} >
+      tagComponents.push(<StyledTag icon={DotCircle} onClick = {function() {submitResponse(tag)} } {...tagPieceProps} >
         {tag}
       </StyledTag>);
     });
     return tagComponents;
   }
 
-  const [price, setPrice] = useState('0');
+  const [price, setPrice] = useState(0);
 
   return (
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
-        <LandingPage> 
+        <LandingPage>
           <Popup>
             <h1>Hey there User!</h1>
             <PriceDisplay>${price}</PriceDisplay>
           </Popup>
-          <ScrollingList ref={scrollRef}>
-            {displayHighlightedText()}
-            {/* <HighlightedText labels={highlightedStrings}>
-            </HighlightedText> */}
-          </ScrollingList>
-          <InputContainer>
+          <TopBox>
+            <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
+              {displayHighlightedText()}
+              {/* <HighlightedText labels={highlightedStrings}>
+              </HighlightedText> */}
+            </ScrollingList>
             <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
             <StyledFieldSet>
               <legend><SmallText>OR</SmallText></legend>
             </StyledFieldSet>
+          </TopBox>
+          <InputContainer>
             <TagContainer>
-              {displayTags(tags)}
+              {displayTags(resOptions)}
             </TagContainer>
             <Submit onSubmit = {submitResponse}/>
           </InputContainer>
@@ -544,10 +527,9 @@ const Popup = styled.div`
   padding: 10px;
   zIndex: 2;
 
-  &:hover {
+  &: hover {
     top: 0%;
-  } 
-
+  }
 `;
 
 const StyledTag = styled(Tag)<{position: string}>`
@@ -574,10 +556,6 @@ const StyledSnowfall = styled(Snowfall)`
   zIndex: -1;
 `;
 
-const InputContainer = styled.div`
-  ${Mixins.flex('column')};
-`;
-
 const StyledFieldSet = styled.fieldset`
   border-top: 1px solid #8a8a8a;
   border-bottom: none;
@@ -588,18 +566,61 @@ const StyledFieldSet = styled.fieldset`
   margin-top: 10px;
 `;
 
-const ScrollingList = styled.div`
+const InputContainer = styled.div`
+  ${Mixins.flex('column')};
+  position: absolute;
+  top: calc(100% - 150px);
+  width: calc(100% - calc(${mainFramePadding} * 2));
+  height: calc(125px);
+  justify-content: end;
+`;
+
+const TopBox = styled.div`
+  position: absolute;
+  width: calc(100% - calc(${mainFramePadding} * 2));
+  height: calc(100% - 25px);
+`
+
+const ScrollingList = styled.div<{optionsAvailable?: boolean}>`
   ${Mixins.scroll}
   &::-webkit-scrollbar {
     background-color: rgba(0, 0, 0, 0);
   }
-
-  height: calc(100% - 275px);
+  ${Mixins.transition(['height'])}
+  ${({ optionsAvailable }): string =>
+  optionsAvailable
+    ? `
+    animation: grow 0.18s ease-out 1;
+    height: calc(100% - 275px);
+  `
+  : `
+    animation: shrink 0.18s ease-in 1;
+    height: calc(100% - 235px);
+  `}
   background: rgba(238, 238, 238, 0.25);
-  padding: 10px;
+  padding: 5px;
+  padding-top: 25px;
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
+
+  @keyframes grow {
+      from {
+        height: calc(100% - 235px);
+      }
+      to {
+        height: calc(100% - 275px);
+      }
+  }
+
+  @keyframes shrink {
+      from {
+        height: calc(100% - 275px);
+      }
+      to {
+        height: calc(100% - 235px);
+      }
+  }
 `;
 
 const LandingPageContainer = styled.div`
@@ -626,31 +647,93 @@ const LandingPage = styled.div`
   width: 60%;
   height: 100%;
   background: rgba(238, 238, 238, 0.6);
-  padding: 1rem;
+  padding: ${mainFramePadding};
   border-radius: 5px;
   min-height: 300px;
   margin-left: auto;
   margin-right: auto;
   overflow: hidden; 
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-wrap: break-word; 
   position: relative;
   zIndex: 0;
 `;
 
-const TextBubble = styled.div<{ fromBot: boolean }>`
-border: 1.5px solid rgba(0,0,0,0.1);
-${({ theme, fromBot }): string =>
+const container_margin = '10px'
+const TextBubbleContainer = styled.div<{fromBot: boolean}>`
+  ${Mixins.flex('row')};
+  ${Mixins.flex('center')};
+  position: relative;
+
+  maxWidth: '80%';
+  width: 'fit-content';
+  ${({ fromBot }): string => 
   fromBot ? `
-  border-radius: 20px 20px 20px 5px;
-  background-color:  ${theme.colors['background']};
+    justify-content: left;
+    margin-left: 0px;
+    margin-right: ${container_margin};
   ` : 
   `
-  border-radius: 20px 20px 5px 20px;
-  background-color: ${theme.colors['primary']};
+    justify-content: right;
+    margin-left: ${container_margin};
+    margin-right: 0px;
   `}
-}
-margin-bottom: 10px;  
+  marginTop: standardMarginSize;
+
+  margin-top: -20px;
+  margin-bottom: 20px;
+  ${({ theme }): string => `
+    padding: ${theme.dimensions.padding.withBorder};
+  `}
+`;
+
+const bubble_margin = '50px'
+const TextBubble = styled.div<{ fromBot: boolean }>`
+  ${({ fromBot }): string => 
+  fromBot ? `
+    margin-left: ${bubble_margin};
+    margin-right: 0px;
+  ` : 
+  `
+    margin-left: 0px;
+    margin-right: ${bubble_margin};
+  `}
+  border: 1.5px solid rgba(0,0,0,0.1);
+  ${({ theme, fromBot }): string =>
+    fromBot ? `
+    border-radius: 20px 20px 20px 5px;
+    background-color:  ${theme.colors['background']};
+    ` : 
+    `
+    border-radius: 20px 20px 5px 20px;
+    background-color: ${theme.colors['primary']};
+    `}
+  }
+  margin-bottom: 10px;  
+`;
+
+const StyledImg = styled.svg<{ imgSize: number, fromBot: boolean}>`
+  ${({ fromBot }): string => 
+  fromBot ? `
+    bottom: calc(0px);
+    left: calc(0px);
+  ` : 
+  `
+    bottom: calc(0px);
+    right: calc(0px);
+  `}
+
+  position: absolute;
+  ${({ imgSize }) => `
+    width: ${imgSize}px;
+    height: ${imgSize}px;
+  `}
+  margin-left: 10px;
+  margin-right: 10px;
+
+  border-radius: 999px;
+  border-style: solid;
+  padding: 10px;
 `;
 
 export default Landing;
