@@ -587,20 +587,10 @@ const Popup = styled.div<{isHovered: boolean}>`
   ${({ isHovered }): string =>
   isHovered
     ? `
-    animation: fall 0.25s ease-out 1;
+    transition: 0.25s ease-out 1;
     top: calc(0%);
   `
-  : `
-  `}
-
-  @keyframes fall {
-    from {
-      top: calc(-50%);
-    }
-    to {
-      top: calc(0%);
-    }
-  }
+  : ``}
 `;
 
 const StyledTag = styled(Tag)<{position: string}>`
