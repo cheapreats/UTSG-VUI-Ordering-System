@@ -104,6 +104,7 @@ const Landing: NextPage = () => {
   }
 
   const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
+
     let txtAlign = 'right';
     if (fromBot){
       txtAlign = 'left';
@@ -333,8 +334,14 @@ const Landing: NextPage = () => {
                 );
               }
             });
+            
 
-          } else {
+          } 
+          else if (targetVariable == 'price') {
+            console.log("nice");
+            setPrice(response.data.variables[targetVariable]);
+          }
+          else {
             if (!response.data.variables[targetVariable]){
               console.warn(targetVariable + ' is not a valid Voiceflow variable.');
               continue
@@ -470,11 +477,17 @@ const Landing: NextPage = () => {
     return tagComponents;
   }
 
+  const [price, setPrice] = useState('0');
+
   return (
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
-        <LandingPage>
+        <LandingPage> 
+          <Popup>
+            <h1>Hey there User!</h1>
+            <PriceDisplay>${price}</PriceDisplay>
+          </Popup>
           <ScrollingList ref={scrollRef}>
             {displayHighlightedText()}
             {/* <HighlightedText labels={highlightedStrings}>
@@ -495,6 +508,47 @@ const Landing: NextPage = () => {
     </LandingPageContainer>
   );
 };
+
+
+const PriceDisplay = styled.div`
+  ${Mixins.flex('center')};
+  margin-right: 10px;
+  margin-left: auto;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  background: transparent;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  position: relative;
+  font-weight: bold;
+  overflow: hidden;
+  outline: none;
+  filter: drop-shadow(0 1mm 1mm black);
+  
+  ${({theme}): string =>`
+    background-color: ${theme.colors['primary']};
+    font-family: ${theme.font.family};
+    color: ${theme.colors['background']};
+    padding: ${theme.dimensions.padding.withBorder};
+  `}
+`;
+
+const Popup = styled.div`
+  ${Mixins.flex('row')};
+  position: absolute;
+  top: -7%;
+  height: 10%;
+  width: calc(100% - 2rem);
+  ${({ theme }): string => `
+    background-color: ${theme.colors['background']};
+  `}
+  padding: 10px;
+  zIndex: 2;
+
+  &:hover {
+    top: 0%;
+  } 
+
+`;
 
 const StyledTag = styled(Tag)<{position: string}>`
   border-radius: ${({position}) => {
