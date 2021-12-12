@@ -80,7 +80,7 @@ const Landing: NextPage = () => {
   const [loading, setLoading] = useState(false);
 
 
-  // const theme = useTheme();
+   const theme = useTheme();
 
   //auto scroll to bottom
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -486,7 +486,12 @@ const Landing: NextPage = () => {
 
   return (
     <>
-    {loading && <Loading loading={true} />}
+    {loading && 
+      <>
+        <Loading loading={true} />
+        <Snowfall color={theme.colors.primary} />
+      </>
+    }
     {!loading &&
     <LandingPageContainer>
       <LandingPageContent>

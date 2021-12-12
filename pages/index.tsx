@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { Button, Heading, CarouselTestimonial, Loading } from "@cheapreats/react-ui";
 import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
 import { Parallax } from "react-parallax";
@@ -31,14 +31,11 @@ const PARALLAXCONF = {
   strength: 300,
 };
 
-const COLORS = {
-  primary: "#EE2434",
-  background: "#FFFFFF",
-};
 
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef();
+  const theme = useTheme();
 
   const redirectToOrder = () => {
     setLoading(true);
@@ -52,7 +49,12 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      {loading && <Loading loading={true} />}
+      {loading &&
+        <>
+          <Loading loading={true} />
+          <Snowfall color={theme.colors.primary} />
+        </>
+      }
       {!loading &&
       <>
       <Parallax
@@ -90,10 +92,10 @@ const Home: NextPage = () => {
               />
           </Container>
         </Section>
-        <Snowfall color={COLORS.primary} />
+        <Snowfall color={theme.colors.primary} />
       </Parallax>
       <Section>
-        <Subsection bgCol={COLORS.primary}>
+        <Subsection bgCol={theme.colors.primary}>
           <Img src={LOGO} />
         </Subsection>
         <Subsection>
@@ -132,7 +134,7 @@ const Img = styled.img`
   width: 15%;
   height: 15%;
   border-radius: 50%;
-  background-color: ${COLORS.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const Container = styled.div`
