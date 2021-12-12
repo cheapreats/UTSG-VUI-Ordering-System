@@ -685,6 +685,16 @@ const TextBubbleContainer = styled.div<{fromBot: boolean}>`
   ${({ theme }): string => `
     padding: ${theme.dimensions.padding.withBorder};
   `}
+
+  animation: appear 0.5s ease-in 1;
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100;
+    }
+  }
 `;
 
 const bubble_margin = '50px'
