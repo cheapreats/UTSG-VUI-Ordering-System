@@ -75,6 +75,9 @@ const Landing: NextPage = () => {
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [isBegan, setBegan] = useState<boolean>(false);
   const [resOptions, setResOptions] = useState<Array<string>>([]);
+  const [price, setPrice] = useState<number>(0);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
 
   // const theme = useTheme();
 
@@ -318,6 +321,17 @@ const Landing: NextPage = () => {
           } 
           else if (targetVariable == 'foodItemPrice') { // update order summary
             setPrice(prevPrice => prevPrice + response.data.variables[targetVariable]);
+            continue;
+          }
+          else if (targetVariable == 'orders') {
+            let sumPrices = 0;
+            let orders = response.data.variables[targetVariable];
+            for (var i=0; i<orders.length; i++) {
+              sumPrices += orders[i].price;
+            }
+            setPrice(sumPrices);
+            console.log("damn daniel");
+            continue;
           }
           else {
             if (!response.data.variables[targetVariable]){
@@ -458,19 +472,24 @@ const Landing: NextPage = () => {
     return tagComponents;
   }
 
-  const [price, setPrice] = useState(0);
+  const setFocusTrue = function() {
+    setIsFocused(true);
+  }
+  const setFocusFalse = function() {
+    setIsFocused(false);
+  }
 
   return (
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
         <LandingPage>
-          <Popup>
+          <Popup isFocused={isFocused}>
             <h1>Hey there User!</h1>
             <PriceDisplay>${price}</PriceDisplay>
           </Popup>
           <TopBox>
-            <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
+            <ScrollingList onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse} ref={scrollRef} optionsAvailable={resOptions.length > 0}>
               {displayHighlightedText()}
               {/* <HighlightedText labels={highlightedStrings}>
               </HighlightedText> */}
@@ -515,20 +534,30 @@ const PriceDisplay = styled.div`
   `}
 `;
 
-const Popup = styled.div`
+const Popup = styled.div<{isFocused: boolean}>`
   ${Mixins.flex('row')};
   position: absolute;
-  top: -7%;
+  top: 0;
   height: 10%;
   width: calc(100% - 2rem);
   ${({ theme }): string => `
     background-color: ${theme.colors['background']};
   `}
+  box-shadow: 0 1mm 5mm;
   padding: 10px;
-  zIndex: 2;
+  z-index: 2;
+  transition: transform 300ms;
+  transform: translate3d(0, -80%, 0);
 
-  &: hover {
-    top: 0%;
+  ${({isFocused}): string => 
+    isFocused ? `
+    transition: transform 300ms;
+    transform: translate3d(0, 0%, 0);
+  `
+  : ``}
+  &:hover, &:focus {
+    transition: transform 300ms;
+    transform: translate3d(0, 0%, 0);
   }
 `;
 
@@ -553,7 +582,7 @@ const TagContainer = styled.div`
 
 const StyledSnowfall = styled(Snowfall)`
   position: absolute;
-  zIndex: -1;
+  z-index: -1;
 `;
 
 const StyledFieldSet = styled.fieldset`
@@ -656,7 +685,6 @@ const LandingPage = styled.div`
   overflow-y: hidden;
   overflow-wrap: break-word; 
   position: relative;
-  zIndex: 0;
 `;
 
 const container_margin = '10px'
