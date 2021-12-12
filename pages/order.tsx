@@ -19,6 +19,8 @@ const VFBaseURL = 'https://general-runtime.voiceflow.com';
 const VFURL = ''.concat('/state/', ver, '/user/', userID, '/interact');
 const apiKey = 'VF.61a1370a341ed7001c8e93e8.t7VKYPofdIS3X91hkvquHSTHJeQIMJpuL6RP2U1lt7';
 
+const mainFramePadding = '1rem'
+
 const VBArgs = {
   disabled: false,
   icon: Microphone,
@@ -65,6 +67,7 @@ const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [isBegan, setBegan] = useState<boolean>(false);
+  const [resOptions, setResOptions] = useState<Array<string>>([]);
 
   // const theme = useTheme();
 
@@ -164,6 +167,7 @@ const Landing: NextPage = () => {
       maxWidth: '80%',
       width: 'fit-content',
       marginLeft: marginSize,
+      marginTop: marginSize,
       marginRight: 'auto',
     }
     
@@ -191,7 +195,7 @@ const Landing: NextPage = () => {
       width: 'fit-content',
       marginLeft: margin_left,
       marginRight: margin_right,
-      marginTop: '10px',
+      marginTop: marginSize,
     }
     
     if (highlightedString.isRight){
@@ -264,7 +268,7 @@ const Landing: NextPage = () => {
     return smallTexts
   }
 
-
+  //parse the bot's response
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message"){
@@ -297,6 +301,7 @@ const Landing: NextPage = () => {
             specialRange.end = varIndicatorStart
             continue
           } else if (targetVariable == 'main menu'){ // bot prints menu options
+            setResOptions(start_tags)
             continue;
           }
           
@@ -354,6 +359,7 @@ const Landing: NextPage = () => {
     }
   }
 
+  //called to get the first bot message
   const initVF = async () => {
     
     const reqBody = {
@@ -382,9 +388,11 @@ const Landing: NextPage = () => {
     parseResponse(response.data);
   }
 
+  //get the bot's response to a request the user sent
   const getResponse = async (requestText: string) => {
     if (requestText === ''){return false}
     addHighlightedString(highlightifyString(false, requestText, undefined, undefined));
+    setResOptions([]);
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -451,7 +459,7 @@ const Landing: NextPage = () => {
     getResponse(submission);
   }
 
-  var tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
+  var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
 
   const displayTags = (tags: string[]) => {
     var tagComponents: React.ReactElement[] = [];
@@ -475,18 +483,20 @@ const Landing: NextPage = () => {
       <LandingPageContent>
         <StyledSnowfall/>
         <LandingPage>
-          <ScrollingList ref={scrollRef}>
-            {displayHighlightedText()}
-            {/* <HighlightedText labels={highlightedStrings}>
-            </HighlightedText> */}
-          </ScrollingList>
-          <InputContainer>
+          <TopBox>
+            <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
+              {displayHighlightedText()}
+              {/* <HighlightedText labels={highlightedStrings}>
+              </HighlightedText> */}
+            </ScrollingList>
             <SmartVoiceButton onClick={VBClicked} isPulsing={isWaiting} {...VBProps} {...VBArgs}/>
             <StyledFieldSet>
               <legend><SmallText>OR</SmallText></legend>
             </StyledFieldSet>
+          </TopBox>
+          <InputContainer>
             <TagContainer>
-              {displayTags(tags)}
+              {displayTags(resOptions)}
             </TagContainer>
             <Submit onSubmit = {submitResponse}/>
           </InputContainer>
@@ -520,10 +530,6 @@ const StyledSnowfall = styled(Snowfall)`
   zIndex: -1;
 `;
 
-const InputContainer = styled.div`
-  ${Mixins.flex('column')};
-`;
-
 const StyledFieldSet = styled.fieldset`
   border-top: 1px solid #8a8a8a;
   border-bottom: none;
@@ -534,18 +540,60 @@ const StyledFieldSet = styled.fieldset`
   margin-top: 10px;
 `;
 
-const ScrollingList = styled.div`
+const InputContainer = styled.div`
+  ${Mixins.flex('column')};
+  position: absolute;
+  top: calc(100% - 300px);
+  width: calc(100% - calc(${mainFramePadding} * 2));
+  height: calc(275px);
+  justify-content: end;
+`;
+
+const TopBox = styled.div`
+  position: absolute;
+  width: calc(100% - calc(${mainFramePadding} * 2));
+  height: calc(100% - 25px);
+`
+
+const ScrollingList = styled.div<{optionsAvailable?: boolean}>`
   ${Mixins.scroll}
   &::-webkit-scrollbar {
     background-color: rgba(0, 0, 0, 0);
   }
-
-  height: calc(100% - 275px);
+  ${Mixins.transition(['height'])}
+  ${({ optionsAvailable }): string =>
+  optionsAvailable
+    ? `
+    animation: grow 0.15s ease-out 1;
+    height: calc(100% - 275px);
+  `
+  : `
+    animation: shrink 0.15s ease-in 1;
+    height: calc(100% - 235px);
+  `}
   background: rgba(238, 238, 238, 0.25);
   padding: 10px;
   overflow: hidden; 
   overflow-y: scroll;
   overflow-wrap: break-word;
+
+  @keyframes grow {
+      from {
+        height: calc(100% - 235px);
+      }
+      to {
+        height: calc(100% - 275px);
+      }
+  }
+
+  @keyframes shrink {
+      from {
+        height: calc(100% - 275px);
+      }
+      to {
+        height: calc(100% - 235px);
+      }
+  }
 `;
 
 const LandingPageContainer = styled.div`
@@ -572,13 +620,13 @@ const LandingPage = styled.div`
   width: 60%;
   height: 100%;
   background: rgba(238, 238, 238, 0.6);
-  padding: 1rem;
+  padding: ${mainFramePadding};
   border-radius: 5px;
   min-height: 300px;
   margin-left: auto;
   margin-right: auto;
   overflow: hidden; 
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-wrap: break-word; 
   position: relative;
   zIndex: 0;
