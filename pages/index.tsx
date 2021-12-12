@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
-import { Button, Heading, CarouselTestimonial } from "@cheapreats/react-ui";
+import { Button, Heading, CarouselTestimonial, Loading } from "@cheapreats/react-ui";
 import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
 import { Parallax } from "react-parallax";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Snowfall from "react-snowfall";
 
 const LOGO =
@@ -37,8 +37,11 @@ const COLORS = {
 };
 
 const Home: NextPage = () => {
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef();
+
   const redirectToOrder = () => {
+    setLoading(true);
     window.location.replace("/order");
   };
 
@@ -49,6 +52,9 @@ const Home: NextPage = () => {
 
   return (
     <div>
+      {loading && <Loading loading={true} />}
+      {!loading &&
+      <>
       <Parallax
         blur={PARALLAXCONF.blur}
         bgImage={PARALLAXCONF.bgImage}
@@ -116,6 +122,8 @@ const Home: NextPage = () => {
           />
         </Subsection>
       </Section>
+      </>
+      }
     </div>
   );
 };
