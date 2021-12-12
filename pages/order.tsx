@@ -568,9 +568,11 @@ const PopupContainer = styled.div`
 const Popup = styled.div<{isHovered: boolean}>`
   ${Mixins.flex('row')};
   position: relative;
-  left: 10%;
   top: -50%;
   height: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: calc(800px);
   width: calc(80%);
   ${({ theme }): string => `
     background-color: ${theme.colors['background']};
