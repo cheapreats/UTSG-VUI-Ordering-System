@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup, Tag } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, TagGroup, Tag, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
-import { Robot, User, Microphone, DotCircle } from '@styled-icons/fa-solid/';
+import { Robot, User, Microphone, DotCircle, ShoppingCart } from '@styled-icons/fa-solid/';
 import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -281,6 +281,9 @@ const Landing: NextPage = () => {
           } else if (targetVariable == 'main menu'){ // bot prints menu options
             setResOptions(start_tags)
             continue;
+          } else if (targetVariable == 'session reset'){
+            setPrice(0)
+            continue;
           }
           
           const response = await axios({
@@ -345,7 +348,7 @@ const Landing: NextPage = () => {
         if (specialRange.end == 0) {specialRange.end = res.length}
 
         speak(res);
-        addHighlightedString(highlightifyString(isSpecial, res, list, specialRange));
+        addHighlightedString(highlightifyString(true, res, list, specialRange));
 
       } else {
         console.warn("Received an unexpected data type: Item - ".concat(item));
@@ -483,13 +486,22 @@ const Landing: NextPage = () => {
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
+        <PopupContainer onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse}>
+          <Popup isHovered={isFocused}>
+            <PriceDisplayHeading>Hey there User!</PriceDisplayHeading>
+            <PriceDisplayButton
+              onClick={undefined}
+              icon={ShoppingCart}
+              primary={true}
+              iconSize="25px"
+              margin="5px"
+            >
+              {'$' + price.toString()}
+            </PriceDisplayButton>
+            {/* <PriceDisplay icon={ShoppingCart}>{price}</PriceDisplay> */}
+          </Popup>
+        </PopupContainer>
         <LandingPage>
-          <PopupContainer onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse}>
-            <Popup isHovered={isFocused}>
-              <h1>Hey there User!</h1>
-              <PriceDisplay>${price}</PriceDisplay>
-            </Popup>
-          </PopupContainer>
           <TopBox>
             <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
               {displayHighlightedText()}
@@ -513,6 +525,18 @@ const Landing: NextPage = () => {
   );
 };
 
+const PriceDisplayHeading = styled(Heading)`
+  width: 45%;
+  overflow: hidden;
+  margin-left: 5px;
+  margin-right: auto;
+`
+
+const PriceDisplayButton = styled(Button)`
+  width: 45%;
+  margin-left: auto;
+  margin-right: 5px;
+`
 
 const PriceDisplay = styled.div`
   ${Mixins.flex('center')};
@@ -540,16 +564,17 @@ const PopupContainer = styled.div`
   position: absolute;
   top: 0%;
   width: 100%;
-  height: 20%;
+  height: 150px;
   z-index: 2;
 `;
 
 const Popup = styled.div<{isHovered: boolean}>`
   ${Mixins.flex('row')};
   position: relative;
+  left: 10%;
   top: -50%;
   height: 50%;
-  width: calc(100% - 2rem);
+  width: calc(80%);
   ${({ theme }): string => `
     background-color: ${theme.colors['background']};
   `}
@@ -562,20 +587,11 @@ const Popup = styled.div<{isHovered: boolean}>`
   ${({ isHovered }): string =>
   isHovered
     ? `
-    animation: fall 0.18s ease-out 1;
+    animation: fall 0.25s ease-out 1;
     top: calc(0%);
   `
   : `
   `}
-
-  @keyframes rise {
-    from {
-      top: calc(0%);
-    }
-    to {
-      top: calc(-50%);
-    }
-  }
 
   @keyframes fall {
     from {
@@ -699,12 +715,13 @@ const LandingPageContent = styled.div`
 `;
 
 const LandingPage = styled.div`
+  min-width: 400px;
+  min-height: 600px;
   width: 60%;
   height: 100%;
   background: rgba(238, 238, 238, 0.6);
   padding: ${mainFramePadding};
   border-radius: 5px;
-  min-height: 300px;
   margin-left: auto;
   margin-right: auto;
   overflow: hidden; 
