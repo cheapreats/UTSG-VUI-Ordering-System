@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup, Tag } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Robot, User, Microphone } from '@styled-icons/fa-solid/';
@@ -446,6 +446,29 @@ const Landing: NextPage = () => {
     }
   }
 
+  const submitResponse = function(submission: string) {
+    if (synth) synth.cancel();
+    getResponse(submission);
+  }
+
+  var tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
+
+  const displayTags = (tags: string[]) => {
+    var tagComponents: React.ReactElement[] = [];
+    tags.map((tag, index) => {
+      const tagPieceProps = {position: 'middle'};
+      if (index === 0 ){
+          tagPieceProps.position = 'left';
+      } 
+      if (index === tags.length - 1) {
+          tagPieceProps.position = 'right';
+      }
+      tagComponents.push(<StyledTag onClick = {function() {submitResponse(tag)} } {...tagPieceProps} >
+        {tag}
+      </StyledTag>);
+    });
+    return tagComponents;
+  }
 
   return (
     <LandingPageContainer>
@@ -462,16 +485,10 @@ const Landing: NextPage = () => {
             <StyledFieldSet>
               <legend><SmallText>OR</SmallText></legend>
             </StyledFieldSet>
-            <StyledTagGroup tags={[
-              {children: "Place Order"},
-              {children: "Cancel Order"},
-              {children: "List Order"},
-              {children: "Done"},
-            ]} />
-            <Submit onSubmit = {function(submission: string){
-              if (synth) synth.cancel();
-              getResponse(submission);
-            }}/>
+            <TagContainer>
+              {displayTags(tags)}
+            </TagContainer>
+            <Submit onSubmit = {submitResponse}/>
           </InputContainer>
         </LandingPage>
       </LandingPageContent>
@@ -479,10 +496,23 @@ const Landing: NextPage = () => {
   );
 };
 
-const StyledTagGroup = styled(TagGroup)`
-  margin-left: auto;
-  margin-right: auto;
+const StyledTag = styled(Tag)<{position: string}>`
+  border-radius: ${({position}) => {
+    if (position === 'left') {return '999px 0px 0px 999px'}
+    if (position === 'right') {return '0px 999px 999px 0px'}
+    if (position === 'middle') {return '0px'}
+    return ''
+  }};
+
+  ${({theme}): string => `
+    background-color: ${theme.colors['background']};
+  `}
   margin-bottom: 10px;
+`;
+
+const TagContainer = styled.div`
+  ${Mixins.flex('row')};
+  ${Mixins.flex('center')};
 `;
 
 const StyledSnowfall = styled(Snowfall)`
@@ -510,7 +540,7 @@ const ScrollingList = styled.div`
     background-color: rgba(0, 0, 0, 0);
   }
 
-  height: calc(100% - 250px);
+  height: calc(100% - 275px);
   background: rgba(238, 238, 238, 0.25);
   padding: 10px;
   overflow: hidden; 
