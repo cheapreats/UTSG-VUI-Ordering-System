@@ -120,7 +120,7 @@ const Landing: NextPage = () => {
     // setNumStrings(nextHighlightedStrings.length);
   }
 
-  const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<any>, specialRange: SpecialRange|undefined):HighlightedString => {
+  const highlightifyString = (fromBot: boolean, text: string, list: undefined | Array<React.ReactElement>, specialRange: SpecialRange|undefined):HighlightedString => {
 
     let txtAlign = 'right';
     if (fromBot){
@@ -196,7 +196,7 @@ const Landing: NextPage = () => {
       icon = Robot;
     }
 
-    console.log(highlightedString.listItemsBodies)
+    // console.log(highlightedString.listItemsBodies)
 
     if (highlightedString.isRight){
       return (
@@ -238,8 +238,8 @@ const Landing: NextPage = () => {
     </>
   }
 
-  const smallTextifyList = (strings: Array<string>):Array<any> => {
-    let smallTexts: Array<any> = [];
+  const smallTextifyList = (strings: Array<string>):Array<React.ReactElement> => {
+    let smallTexts: Array<React.ReactElement> = [];
     for (let i = 0; i < strings.length; i++) {
       smallTexts.push(<SmallText>{"".concat((i+1).toString(), ". ", strings[i])}</SmallText>);
     }
@@ -258,7 +258,7 @@ const Landing: NextPage = () => {
           end: 0,
         }
 
-        let list:Array<any> | undefined = undefined;
+        let list:Array<React.ReactElement> | undefined = undefined;
         while (res.indexOf('[') != -1){
           
           let varIndicatorStart: number = res.indexOf('[')
@@ -379,8 +379,6 @@ const Landing: NextPage = () => {
       headers: { Authorization: apiKey,},
       data: reqBody,
     });
-
-    console.log(response)
     
     parseResponse(response.data);
   }
@@ -407,7 +405,6 @@ const Landing: NextPage = () => {
       data: reqBody,
     });
 
-    // console.log(response.data);
     parseResponse(response.data);
   }
 
