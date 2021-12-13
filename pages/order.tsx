@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, TagGroup, Tag, Heading } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, TagGroup, Tag, Heading, Loading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
 import { Robot, User, Microphone, DotCircle, ShoppingCart } from '@styled-icons/fa-solid/';
@@ -77,9 +77,10 @@ const Landing: NextPage = () => {
   const [resOptions, setResOptions] = useState<Array<string>>([]);
   const [price, setPrice] = useState<number>(0);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
 
-  // const theme = useTheme();
+   const theme = useTheme();
 
   //auto scroll to bottom
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -246,6 +247,10 @@ const Landing: NextPage = () => {
     return smallTexts
   }
 
+  const handleQRClick = () => {
+    setLoading(true);
+  }
+
   //parse the bot's response
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
@@ -315,7 +320,7 @@ const Landing: NextPage = () => {
                 }
 
                 addElement(
-                  createQRBubble(<a href={checkoutURL}><QRScan {...QRArgs}/></a>)
+                  createQRBubble(<a href={checkoutURL} onClick={handleQRClick}><QRScan {...QRArgs}/></a>)
                 );
               }
             });
@@ -480,6 +485,14 @@ const Landing: NextPage = () => {
   }
 
   return (
+    <>
+    {loading && 
+      <>
+        <Loading loading={true} />
+        <Snowfall color={theme.colors.primary} />
+      </>
+    }
+    {!loading &&
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
@@ -519,6 +532,8 @@ const Landing: NextPage = () => {
         </LandingPage>
       </LandingPageContent>
     </LandingPageContainer>
+    }
+    </>
   );
 };
 
