@@ -85,7 +85,7 @@ const TH = styled.th`
 
 const UnderlinedParagraph = styled(Paragraph)`
   margin-bottom: 0.5em;
-  text-decoration: underline;
+  // text-decoration: underline;
 `;
 
 const OrderCard = styled(OrderTotalCard)`

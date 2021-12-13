@@ -73,6 +73,7 @@ export const Checkout: React.VFC = () => {
       <Snowfall color="white" />
       <StyledCard animated>
         {!!cart && <OrderSummary key={cart._id} cart={cart} />}
+        <Header>Payment</Header>
         {clientSecret && (
           <Elements stripe={stripePromise} options={options}>
             <CheckoutForm />
@@ -87,20 +88,13 @@ export default Checkout;
 
 const StyledCard = styled(Card)`
   width: 50%;
+  text-align: center;
   margin-top: 3em;
   margin-left: auto;
   margin-right: auto;
   position: relative;
 `;
 
-const StyledDiv = styled.div`
-  background-color: white;
-  border-radius: 8px;
-  border: 2px solid black;
-  width: 50%;
-  margin-top: 3em;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 12px 12px 2px 1px rgba(236, 236, 236, 1);
-  padding: 1em;
+const Header = styled.div`
+  font-size: 20px;
 `;

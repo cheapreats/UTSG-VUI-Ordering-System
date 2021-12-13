@@ -8,6 +8,7 @@ export const Success: React.VFC = () => {
   const headingProps = {
     color: "green",
     textAlign: "center",
+    bold: true,
   };
 
   const smallTextProps = {
@@ -46,4 +47,5 @@ const StyledCard = styled(Card)`
   margin-left: auto;
   margin-right: auto;
   postion: relative;
+  padding: 3em;
 `;
