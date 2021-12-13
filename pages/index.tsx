@@ -36,14 +36,16 @@ const COLORS = {
 };
 
 const Home: NextPage = () => {
-  const scrollRef = useRef();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const redirectToOrder = () => {
     window.location.replace("/order");
   };
 
   const scrollOnClick = () => {
-    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef && scrollRef.current){
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -63,26 +65,29 @@ const Home: NextPage = () => {
               size="3rem"
               textAlign="center"
               bold={true}
-              children="Welcome to our Voice Ordering System"
               lineHeight="1.3"
               inlineStyle="max-width: 80%"
-            />
+            > 
+              Welcome to our Voice Ordering System
+            </Heading>
             <Section>
               <Button
                 onClick={redirectToOrder}
                 icon={BagFill}
-                children="Start Ordering"
                 primary={true}
                 iconSize="20px"
                 margin="5px"
-              />
+              >
+                Start Ordering
+              </Button>
               <Button
                 onClick={scrollOnClick}
                 icon={InfoCircleFill}
-                children="Learn More"
                 iconSize="20px"
                 margin="5px"
-              />
+              >
+                Learn More
+              </Button>
             </Section>
           </Container>
         </Section>
@@ -96,8 +101,9 @@ const Home: NextPage = () => {
             type="h1"
             color="black"
             bold={true}
-            children="How it works"
-          />
+          >
+            How it works
+          </Heading>
           <h1 ref={scrollRef}></h1>
           <CarouselTestimonial
             carouselTitle={CAROUSELCONF.title}
@@ -110,10 +116,11 @@ const Home: NextPage = () => {
           <Button
             onClick={redirectToOrder}
             icon={BagFill}
-            children="Start Ordering"
             iconSize="20px"
             margin="5px"
-          />
+          >
+            Start Ordering
+          </Button>
         </Subsection>
       </Section>
     </div>
