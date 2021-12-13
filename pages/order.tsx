@@ -12,6 +12,15 @@ import Theme from "@cheapreats/react-ui/dist/Themes/ThemeTemplate";
 import Snowfall from 'react-snowfall';
 const axios = require('axios');
 
+interface IOrder { 
+  store:string, 
+  storeid:string, 
+  item:string,
+  itemid:string,
+  price:number,
+
+
+} 
 
 var userID = '2';
 const ver = '61a45af9bb4f63000637acef';
@@ -76,6 +85,7 @@ const Landing: NextPage = () => {
   const [isBegan, setBegan] = useState<boolean>(false);
   const [resOptions, setResOptions] = useState<Array<string>>([]);
   const [price, setPrice] = useState<number>(0);
+  const [quantity, setQuantity] = useState<number>(0);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
@@ -329,16 +339,17 @@ const Landing: NextPage = () => {
           } 
           else if (targetVariable == 'foodItemPrice') { // update order summary
             setPrice(prevPrice => prevPrice + response.data.variables[targetVariable]);
+            setQuantity(prevQuantity => prevQuantity + 1);
             continue;
           }
           else if (targetVariable == 'orders') {
             let sumPrices = 0;
-            let orders = response.data.variables[targetVariable];
+            let orders: IOrder[] = response.data.variables[targetVariable];
             for (var i=0; i<orders.length; i++) {
               sumPrices += orders[i].price;
             }
             setPrice(sumPrices);
-            console.log("damn daniel");
+            setQuantity(prevQuantity => prevQuantity - 1);
             continue;
           }
           else {
@@ -506,7 +517,7 @@ const Landing: NextPage = () => {
               iconSize="25px"
               margin="5px"
             >
-              {'$' + price.toString()}
+              {quantity.toString() + '|$' + price.toString()}
             </PriceDisplayButton>
             {/* <PriceDisplay icon={ShoppingCart}>{price}</PriceDisplay> */}
           </Popup>
@@ -554,6 +565,7 @@ const PriceDisplay = styled.div`
   ${Mixins.flex('center')};
   margin-right: 10px;
   margin-left: auto;
+  height: 100%;
   border: 1.5px solid rgba(0,0,0,0.1);
   background: transparent;
   border-radius: 999px;
@@ -593,6 +605,7 @@ const Popup = styled.div<{isHovered: boolean}>`
     background-color: ${theme.colors['background']};
   `}
   box-shadow: 0 1mm 5mm;
+  border-radius: 0 0 20px 20px;
   padding: 10px;
   z-index: 2;
 
