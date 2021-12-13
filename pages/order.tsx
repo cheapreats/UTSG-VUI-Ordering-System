@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import { QRScan, QRScanProps, Button, SmallText, HighlightedText, HighlightedString, ClickableSmallText, ScrollableListContent, 
-  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, Heading, TagGroup, Tag } from "@cheapreats/react-ui";
+  VoiceButtonProps, ButtonProps, Mixins, BaseStyles, TagGroup, Tag, Heading } from "@cheapreats/react-ui";
 import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, {useEffect, useState, useRef} from 'react';
-import { Robot, User, Microphone, DotCircle } from '@styled-icons/fa-solid/';
+import { Robot, User, Microphone, DotCircle, ShoppingCart } from '@styled-icons/fa-solid/';
 import styled, { useTheme } from 'styled-components';
 import {CartItem, SmartVoiceButton, Submit} from '../components';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -291,6 +291,9 @@ const Landing: NextPage = () => {
           } else if (targetVariable == 'main menu'){ // bot prints menu options
             setResOptions(start_tags)
             continue;
+          } else if (targetVariable == 'session reset'){
+            setPrice(0)
+            continue;
           }
           
           const response = await axios({
@@ -356,7 +359,7 @@ const Landing: NextPage = () => {
         if (specialRange.end == 0) {specialRange.end = res.length}
 
         speak(res);
-        addHighlightedString(highlightifyString(isSpecial, res, list, specialRange));
+        addHighlightedString(highlightifyString(true, res, list, specialRange));
 
       } else {
         console.warn("Received an unexpected data type: Item - ".concat(item));
@@ -494,17 +497,24 @@ const Landing: NextPage = () => {
     <LandingPageContainer>
       <LandingPageContent>
         <StyledSnowfall/>
-        <LandingPage>
-          <Popup isFocused={isFocused}>
-            <h1>Hey there User!</h1>
-            <PriceDisplay>
-              <h2>{quantity}</h2>
-              <h2>|</h2>
-              <h2>${price}</h2>
-            </PriceDisplay>
+        <PopupContainer onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse}>
+          <Popup isHovered={isFocused}>
+            <PriceDisplayHeading>Hey there User!</PriceDisplayHeading>
+            <PriceDisplayButton
+              onClick={undefined}
+              icon={ShoppingCart}
+              primary={true}
+              iconSize="25px"
+              margin="5px"
+            >
+              {quantity.toString() + '|$' + price.toString()}
+            </PriceDisplayButton>
+            {/* <PriceDisplay icon={ShoppingCart}>{price}</PriceDisplay> */}
           </Popup>
+        </PopupContainer>
+        <LandingPage>
           <TopBox>
-            <ScrollingList onMouseEnter={setFocusTrue} onMouseLeave={setFocusFalse} ref={scrollRef} optionsAvailable={resOptions.length > 0}>
+            <ScrollingList ref={scrollRef} optionsAvailable={resOptions.length > 0}>
               {displayHighlightedText()}
               {/* <HighlightedText labels={highlightedStrings}>
               </HighlightedText> */}
@@ -526,12 +536,24 @@ const Landing: NextPage = () => {
   );
 };
 
+const PriceDisplayHeading = styled(Heading)`
+  width: 45%;
+  overflow: hidden;
+  margin-left: 5px;
+  margin-right: auto;
+`
+
+const PriceDisplayButton = styled(Button)`
+  width: 45%;
+  margin-left: auto;
+  margin-right: 5px;
+`
 
 const PriceDisplay = styled.div`
   ${Mixins.flex('center')};
   margin-right: 10px;
   margin-left: auto;
-  height: 75%;
+  height: 100%;
   border: 1.5px solid rgba(0,0,0,0.1);
   background: transparent;
   border-radius: 999px;
@@ -550,13 +572,21 @@ const PriceDisplay = styled.div`
   `}
 `;
 
-const Popup = styled.div<{isFocused: boolean}>`
-  ${Mixins.flex('row')};
-  ${Mixins.flex('center')};
+const PopupContainer = styled.div`
   position: absolute;
-  top: 0;
-  height: 10%;
-  width: calc(100% - 2rem);
+  top: 0%;
+  width: 100%;
+  height: 150px;
+  z-index: 2;
+`;
+
+const Popup = styled.div<{isHovered: boolean}>`
+  ${Mixins.flex('row')};
+  position: relative;
+  left: 10%;
+  top: -50%;
+  height: 50%;
+  width: calc(80%);
   ${({ theme }): string => `
     background-color: ${theme.colors['background']};
   `}
@@ -564,18 +594,25 @@ const Popup = styled.div<{isFocused: boolean}>`
   border-radius: 0 0 20px 20px;
   padding: 10px;
   z-index: 2;
-  transition: transform 300ms;
-  transform: translate3d(0, -80%, 0);
 
-  ${({isFocused}): string => 
-    isFocused ? `
-    transition: transform 300ms;
-    transform: translate3d(0, 0%, 0);
+  transition: 0.5s;
+
+  ${({ isHovered }): string =>
+  isHovered
+    ? `
+    animation: fall 0.25s ease-out 1;
+    top: calc(0%);
   `
-  : ``}
-  &:hover, &:focus {
-    transition: transform 300ms;
-    transform: translate3d(0, 0%, 0);
+  : `
+  `}
+
+  @keyframes fall {
+    from {
+      top: calc(-50%);
+    }
+    to {
+      top: calc(0%);
+    }
   }
 `;
 
@@ -691,12 +728,13 @@ const LandingPageContent = styled.div`
 `;
 
 const LandingPage = styled.div`
+  min-width: 400px;
+  min-height: 600px;
   width: 60%;
   height: 100%;
   background: rgba(238, 238, 238, 0.6);
   padding: ${mainFramePadding};
   border-radius: 5px;
-  min-height: 300px;
   margin-left: auto;
   margin-right: auto;
   overflow: hidden; 
