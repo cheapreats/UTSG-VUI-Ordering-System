@@ -1,6 +1,11 @@
 import type { NextPage } from "next";
 import styled, { useTheme } from "styled-components";
-import { Button, Heading, CarouselTestimonial, Loading } from "@cheapreats/react-ui";
+import {
+  Button,
+  Heading,
+  CarouselTestimonial,
+  Loading,
+} from "@cheapreats/react-ui";
 import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
 import { Parallax } from "react-parallax";
 import { useRef, useState } from "react";
@@ -31,7 +36,6 @@ const PARALLAXCONF = {
   strength: 300,
 };
 
-
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef();
@@ -46,86 +50,85 @@ const Home: NextPage = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-
   return (
     <div>
-      {loading &&
+      {loading && (
         <>
           <Loading loading={true} />
           <Snowfall color={theme.colors.primary} />
         </>
-      }
-      {!loading &&
-      <>
-      <Parallax
-        blur={PARALLAXCONF.blur}
-        bgImage={PARALLAXCONF.bgImage}
-        strength={PARALLAXCONF.strength}
-      >
-        <Section>
-          <Container>
-            <Heading
-              margin="0 0 10px 0"
-              color="black"
-              type="h1"
-              size="3rem"
-              textAlign="center"
-              bold={true}
-              children="Welcome to our Voice Ordering System"
-              lineHeight="1.3"
-              inlineStyle="max-width: 80%; z-index: 1"
-            />
+      )}
+      {!loading && (
+        <>
+          <Parallax
+            blur={PARALLAXCONF.blur}
+            bgImage={PARALLAXCONF.bgImage}
+            strength={PARALLAXCONF.strength}
+          >
+            <Section>
+              <Container>
+                <Heading
+                  margin="0 0 10px 0"
+                  color="black"
+                  type="h1"
+                  size="3rem"
+                  textAlign="center"
+                  bold={true}
+                  children="Welcome to our Voice Ordering System"
+                  lineHeight="1.3"
+                  inlineStyle="max-width: 80%; z-index: 1"
+                />
+                <Button
+                  onClick={redirectToOrder}
+                  icon={BagFill}
+                  children="Start Ordering"
+                  primary={true}
+                  iconSize="20px"
+                  margin="5px"
+                />
+                <Button
+                  onClick={scrollOnClick}
+                  icon={InfoCircleFill}
+                  children="Learn More"
+                  iconSize="20px"
+                  margin="5px"
+                />
+              </Container>
+            </Section>
+            <Snowfall color={theme.colors.primary} />
+          </Parallax>
+          <Section>
+            <Subsection bgCol={theme.colors.primary}>
+              <Img src={LOGO} />
+            </Subsection>
+            <Subsection>
+              <Heading
+                type="h1"
+                color="black"
+                bold={true}
+                children="How it works"
+              />
+              <h1 ref={scrollRef}></h1>
+              <CarouselTestimonial
+                carouselTitle={CAROUSELCONF.title}
+                carouselImage={CAROUSELCONF.image}
+                reviews={CAROUSELCONF.reviews}
+                isAutoplaying={CAROUSELCONF.autoPlay}
+                carouselInterval={CAROUSELCONF.interval}
+                isLooping={CAROUSELCONF.loop}
+              />
               <Button
                 onClick={redirectToOrder}
                 icon={BagFill}
                 children="Start Ordering"
+                iconSize="20px"
+                margin="5px"
                 primary={true}
-                iconSize="20px"
-                margin="5px"
               />
-              <Button
-                onClick={scrollOnClick}
-                icon={InfoCircleFill}
-                children="Learn More"
-                iconSize="20px"
-                margin="5px"
-              />
-          </Container>
-        </Section>
-        <Snowfall color={theme.colors.primary} />
-      </Parallax>
-      <Section>
-        <Subsection bgCol={theme.colors.primary}>
-          <Img src={LOGO} />
-        </Subsection>
-        <Subsection>
-          <Heading
-            type="h1"
-            color="black"
-            bold={true}
-            children="How it works"
-          />
-          <h1 ref={scrollRef}></h1>
-          <CarouselTestimonial
-            carouselTitle={CAROUSELCONF.title}
-            carouselImage={CAROUSELCONF.image}
-            reviews={CAROUSELCONF.reviews}
-            isAutoplaying={CAROUSELCONF.autoPlay}
-            carouselInterval={CAROUSELCONF.interval}
-            isLooping={CAROUSELCONF.loop}
-          />
-          <Button
-            onClick={redirectToOrder}
-            icon={BagFill}
-            children="Start Ordering"
-            iconSize="20px"
-            margin="5px"
-            primary={true}
-          />
-        </Subsection>
-      </Section>
-      </>
-      }
+            </Subsection>
+          </Section>
+        </>
+      )}
     </div>
   );
 };
@@ -139,7 +142,7 @@ const Img = styled.img`
 
 const Container = styled.div`
   :before {
-    content: '';
+    content: "";
     position: absolute;
     left: -10;
     width: 150vw;
@@ -147,10 +150,10 @@ const Container = styled.div`
     background-color: ${({ theme }) => theme.colors.background};
     transform: rotateZ(${ROTDEGREE}deg);
   }
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Section = styled.div`
