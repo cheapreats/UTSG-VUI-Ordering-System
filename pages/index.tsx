@@ -76,25 +76,22 @@ const Home: NextPage = () => {
                   size="3rem"
                   textAlign="center"
                   bold={true}
-                  children="Welcome to our Voice Ordering System"
                   lineHeight="1.3"
                   inlineStyle="max-width: 80%; z-index: 1"
-                />
+                >Welcome to our Voice Ordering System</Heading>
                 <Button
                   onClick={redirectToOrder}
                   icon={BagFill}
-                  children="Start Ordering"
                   primary={true}
                   iconSize="20px"
                   margin="5px"
-                />
+                >Start Ordering</Button>
                 <Button
                   onClick={scrollOnClick}
                   icon={InfoCircleFill}
-                  children="Learn More"
                   iconSize="20px"
                   margin="5px"
-                />
+                >Learn More</Button>
               </Container>
             </Section>
             <Snowfall color={theme.colors.primary} />
@@ -108,8 +105,7 @@ const Home: NextPage = () => {
                 type="h1"
                 color="black"
                 bold={true}
-                children="How it works"
-              />
+              >How it works</Heading>
               <h1 ref={scrollRef}></h1>
               <CarouselTestimonial
                 carouselTitle={CAROUSELCONF.title}
@@ -122,11 +118,10 @@ const Home: NextPage = () => {
               <Button
                 onClick={redirectToOrder}
                 icon={BagFill}
-                children="Start Ordering"
                 iconSize="20px"
                 margin="5px"
                 primary={true}
-              />
+              >Start Ordering</Button>
             </Subsection>
           </Section>
         </>
