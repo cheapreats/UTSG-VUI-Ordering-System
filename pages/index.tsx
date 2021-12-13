@@ -15,7 +15,7 @@ const LOGO =
   "https://www.cheapreats.com/static/90939a6dc8dacea8e44d046c72521a1b/16c7d/logo.png";
 const IMAGE =
   "https://images.unsplash.com/photo-1604573714289-312a6972f67c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80";
-const ROTDEGREE = -3;
+const ROTDEGREE = -4;
 
 const CAROUSELCONF = {
   title: "",
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
   };
 
   const scrollOnClick = () => {
-    if (scrollRef && scrollRef.current){
+    if (scrollRef && scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
@@ -77,21 +77,29 @@ const Home: NextPage = () => {
                   textAlign="center"
                   bold={true}
                   lineHeight="1.3"
-                  inlineStyle="max-width: 80%; z-index: 1"
-                >Welcome to our Voice Ordering System</Heading>
+                  inlineStyle="max-width: 100%; z-index: 1"
+                >
+                  Welcome to the CheaprEats
+                  <br />
+                  Voice Ordering System
+                </Heading>
                 <Button
                   onClick={redirectToOrder}
                   icon={BagFill}
                   primary={true}
                   iconSize="20px"
                   margin="5px"
-                >Start Ordering</Button>
+                >
+                  Start Ordering
+                </Button>
                 <Button
                   onClick={scrollOnClick}
                   icon={InfoCircleFill}
                   iconSize="20px"
                   margin="5px"
-                >Learn More</Button>
+                >
+                  Learn More
+                </Button>
               </Container>
             </Section>
             <Snowfall color={theme.colors.primary} />
@@ -101,11 +109,9 @@ const Home: NextPage = () => {
               <Img src={LOGO} />
             </Subsection>
             <Subsection>
-              <Heading
-                type="h1"
-                color="black"
-                bold={true}
-              >How it works</Heading>
+              <Heading type="h1" color="black" bold={true}>
+                How it works
+              </Heading>
               <h1 ref={scrollRef}></h1>
               <CarouselTestimonial
                 carouselTitle={CAROUSELCONF.title}
@@ -121,7 +127,9 @@ const Home: NextPage = () => {
                 iconSize="20px"
                 margin="5px"
                 primary={true}
-              >Start Ordering</Button>
+              >
+                Start Ordering
+              </Button>
             </Subsection>
           </Section>
         </>
@@ -131,8 +139,8 @@ const Home: NextPage = () => {
 };
 
 const Img = styled.img`
-  width: 15%;
-  height: 15%;
+  width: 30%;
+  height: 30%;
   border-radius: 50%;
   background-color: ${({ theme }) => theme.colors.background};
 `;
@@ -143,7 +151,7 @@ const Container = styled.div`
     position: absolute;
     left: -10;
     width: 150vw;
-    height: 40%;
+    height: 50%;
     background-color: ${({ theme }) => theme.colors.background};
     transform: rotateZ(${ROTDEGREE}deg);
   }
