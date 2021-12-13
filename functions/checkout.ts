@@ -1,10 +1,13 @@
 import qs from "qs";
 import axios from "axios";
-import { Price } from "../components/interfaces"
+import { Price } from "../components/interfaces";
 
-export const getCustomerSecret = async (amount: number | undefined, price: Price ): Promise<any> => {
+export const getCustomerSecret = async (
+  amount: number | undefined,
+  price: Price
+): Promise<any> => {
   if (!amount) {
-    return
+    return;
   }
 
   const url = "https://api.stripe.com/v1/payment_intents";
@@ -16,8 +19,9 @@ export const getCustomerSecret = async (amount: number | undefined, price: Price
   const concatParam = {
     amount: (amount * 1.13 * 100).toFixed(0),
     currency: price.currency,
-    "automatic_payment_methods[enabled]": price["automatic_payment_methods[enabled]"],
-  }
+    "automatic_payment_methods[enabled]":
+      price["automatic_payment_methods[enabled]"],
+  };
 
   const formattedParam = qs.stringify(concatParam, { arrayFormat: "repeat" });
 
@@ -32,8 +36,10 @@ export const getCustomerSecret = async (amount: number | undefined, price: Price
 };
 
 export const getCartById = async (id: string): Promise<any> => {
-  const endpoint = "http://localhost:3000/graphql";
-  
+  // const endpoint = "http://localhost:3000/graphql";
+  const endpoint =
+    "https://4a69-2607-fea8-9280-1900-590a-f383-9f6a-b598.ngrok.io/graphql";
+
   const query = `
     query Cart($id: ObjectID!) {
       cart(_id: $id) {
@@ -50,21 +56,21 @@ export const getCartById = async (id: string): Promise<any> => {
     }`;
 
   const headers = {
-    "Authorization": "localtest",
+    Authorization: "localtest",
     "Content-Type": "application/json",
     Accept: "application/json",
     "Access-Control-Allow-Origin": "*",
   };
 
   const variables = {
-    id: id
-  }
+    id: id,
+  };
 
   try {
     const response = await axios.post<any>(
       endpoint,
       { query: query, variables },
-      { headers },
+      { headers }
     );
     return response.data;
   } catch (error) {
