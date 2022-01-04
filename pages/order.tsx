@@ -23,9 +23,9 @@ import {
   Robot,
   User,
   Microphone,
-  DotCircle,
   ShoppingCart,
 } from "@styled-icons/fa-solid/";
+import { CustomTag } from "../components/CustomTag";
 import styled, { useTheme } from "styled-components";
 import { CartItem, SmartVoiceButton, Submit } from "../components";
 import SpeechRecognition, {
@@ -524,15 +524,14 @@ const Landing: NextPage = () => {
         tagPieceProps.position = "right";
       }
       tagComponents.push(
-        <StyledTag
-          icon={DotCircle}
+        <CustomTag
           onClick={function () {
             submitResponse(tag);
           }}
           {...tagPieceProps}
         >
           {tag}
-        </StyledTag>
+        </CustomTag>
       );
     });
     return tagComponents;
@@ -579,7 +578,6 @@ const Landing: NextPage = () => {
               <TopBox>
                 <ScrollingList
                   ref={scrollRef}
-                  optionsAvailable={resOptions.length > 0}
                 >
                   {displayHighlightedText()}
                   {/* <HighlightedText labels={highlightedStrings}>
@@ -680,7 +678,11 @@ const StyledTag = styled(Tag)<{ position: string }>`
 
 const TagContainer = styled.div`
   ${Mixins.flex("row")};
-  ${Mixins.flex("center")};
+  justify-content: space-between;
+  width: 35%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
 `;
 
 const StyledSnowfall = styled(Snowfall)`
@@ -713,22 +715,13 @@ const TopBox = styled.div`
   height: calc(100% - 25px);
 `;
 
-const ScrollingList = styled.div<{ optionsAvailable?: boolean }>`
+const ScrollingList = styled.div`
   ${Mixins.scroll}
   &::-webkit-scrollbar {
     background-color: rgba(0, 0, 0, 0);
   }
   ${Mixins.transition(["height"])}
-  ${({ optionsAvailable }): string =>
-    optionsAvailable
-      ? `
-    animation: grow 0.18s ease-out 1;
-    height: calc(100% - 275px);
-  `
-      : `
-    animation: shrink 0.18s ease-in 1;
-    height: calc(100% - 235px);
-  `}
+  height: calc(100% - 275px);
   background: rgba(238, 238, 238, 0.25);
   padding: 5px;
   padding-top: 25px;
@@ -736,23 +729,6 @@ const ScrollingList = styled.div<{ optionsAvailable?: boolean }>`
   overflow-y: scroll;
   overflow-wrap: break-word;
 
-  @keyframes grow {
-    from {
-      height: calc(100% - 235px);
-    }
-    to {
-      height: calc(100% - 275px);
-    }
-  }
-
-  @keyframes shrink {
-    from {
-      height: calc(100% - 275px);
-    }
-    to {
-      height: calc(100% - 235px);
-    }
-  }
 `;
 
 const LandingPageContainer = styled.div`
