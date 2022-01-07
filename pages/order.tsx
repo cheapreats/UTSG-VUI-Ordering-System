@@ -104,7 +104,8 @@ const Landing: NextPage = () => {
   >([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [isBegan, setBegan] = useState<boolean>(false);
-  const [resOptions, setResOptions] = useState<Array<string>>([]);
+  const [tagsVisible, setTagsVisible] = useState<boolean>(false);
+  const [tagSelected, setTagSelected] = useState<number>(-1);
   const [price, setPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(0);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -313,7 +314,6 @@ const Landing: NextPage = () => {
           } else {
             res = res.replace("".concat("[", targetVariable, "]"), "");
           }
-
           if (targetVariable == "highlight") {
             specialRange.begin = varIndicatorStart;
             continue;
@@ -322,7 +322,7 @@ const Landing: NextPage = () => {
             continue;
           } else if (targetVariable == "main menu") {
             // bot prints menu options
-            setResOptions(start_tags);
+            setTagsVisible(true);
             continue;
           } else if (targetVariable == "session reset") {
             setPrice(0);
@@ -445,7 +445,6 @@ const Landing: NextPage = () => {
     addHighlightedString(
       highlightifyString(false, requestText, undefined, undefined)
     );
-    setResOptions([]);
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -514,24 +513,21 @@ const Landing: NextPage = () => {
   var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
 
   const displayTags = (tags: string[]) => {
+    console.log(tagSelected);
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
-      const tagPieceProps = { position: "middle" };
-      if (index === 0) {
-        tagPieceProps.position = "left";
-      }
-      if (index === tags.length - 1) {
-        tagPieceProps.position = "right";
-      }
       tagComponents.push(
-        <CustomTag
+        <StyledCustomTag
           onClick={function () {
+            setTagSelected(index);
+            setTagsVisible(false);
             submitResponse(tag);
           }}
-          {...tagPieceProps}
+          isVisible={tagsVisible}
+          isSelected={index == tagSelected}
         >
           {tag}
-        </CustomTag>
+        </StyledCustomTag>
       );
     });
     return tagComponents;
@@ -596,7 +592,8 @@ const Landing: NextPage = () => {
                 </StyledFieldSet>
               </TopBox>
               <InputContainer>
-                <TagContainer>{displayTags(resOptions)}</TagContainer>
+                <TagContainer>{displayTags(['Place Order', 'Cancel Order', 
+                'List Orders', 'Done'])}</TagContainer>
                 <Submit onSubmit={submitResponse} />
               </InputContainer>
             </LandingPage>
@@ -606,6 +603,62 @@ const Landing: NextPage = () => {
     </>
   );
 };
+
+const SLIDEFADEIN_ANIMATION = `
+  animation: slidefadein 0.5s linear 1;
+  @keyframes slidefadein {
+    from {
+      opacity: 0;
+      transform: translate3d(0,-100%,0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0,0,0);
+    }
+
+  }
+`;
+
+const SLIDEFADEOUT_ANIMATION = `
+  animation: slidefadeout 0.5s linear 1;
+  @keyframes slidefadeout {
+    from {
+      opacity: 1;
+      transform: translate3d(0,0,0);
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(0,100%,0);
+    }
+
+  }
+`;
+
+const FADEOUT_ANIMATION = `
+  animation: fadeout 0.5s linear 1;
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+`;
+
+const StyledCustomTag = styled(CustomTag)<{ isVisible: boolean, isSelected: boolean }>`
+  ${Mixins.transition(['visibility'])}
+  ${({ isVisible, isSelected }): string => 
+      isVisible ? `
+          ${SLIDEFADEIN_ANIMATION}
+          visibility: visible;
+      ` : `
+          ${isSelected ? FADEOUT_ANIMATION 
+              : SLIDEFADEOUT_ANIMATION}
+          visibility: hidden;
+      `
+  }
+`;
 
 const PriceDisplayHeading = styled(Heading)`
   width: 45%;
@@ -654,26 +707,6 @@ const Popup = styled.div<{ isHovered: boolean }>`
     top: calc(0%);
   `
       : ``}
-`;
-
-const StyledTag = styled(Tag)<{ position: string }>`
-  border-radius: ${({ position }) => {
-    if (position === "left") {
-      return "999px 0px 0px 999px";
-    }
-    if (position === "right") {
-      return "0px 999px 999px 0px";
-    }
-    if (position === "middle") {
-      return "0px";
-    }
-    return "";
-  }};
-
-  ${({ theme }): string => `
-    background-color: ${theme.colors["background"]};
-  `}
-  margin-bottom: 10px;
 `;
 
 const TagContainer = styled.div`
