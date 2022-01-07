@@ -8,7 +8,14 @@ import {
 import { Button } from "@cheapreats/react-ui";
 import styled from "styled-components";
 
-export const CheckoutForm = (): React.ReactElement => {
+interface CheckoutFormProps {
+  orderId: string;
+}
+
+export const CheckoutForm: React.VFC<CheckoutFormProps> = ({
+  orderId,
+  ...props
+}) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -23,10 +30,12 @@ export const CheckoutForm = (): React.ReactElement => {
       return;
     }
 
+    const successURL = "http://localhost:8080/checkout?id=".concat(orderId);
+
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "http://localhost:8080/success",
+        return_url: successURL,
         // shipping: {Shipping Object}
       },
     });

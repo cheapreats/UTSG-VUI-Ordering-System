@@ -76,7 +76,7 @@ export const Checkout: React.VFC = () => {
         <Header>Payment</Header>
         {clientSecret && (
           <Elements stripe={stripePromise} options={options}>
-            <CheckoutForm />
+            {!!cart && <CheckoutForm orderId={cart._id} />}
           </Elements>
         )}
       </StyledCard>
