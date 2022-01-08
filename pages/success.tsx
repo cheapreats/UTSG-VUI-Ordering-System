@@ -6,6 +6,8 @@ import Snowfall from "react-snowfall";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
+const SESSION_EXPIRY_TIMEOUT = 7000;
+
 export const Success: React.VFC = () => {
   const [orderId, setOrderId] = useState("");
   const router = useRouter();
@@ -21,8 +23,7 @@ export const Success: React.VFC = () => {
   }
 
   useEffect(() => {
-    const duration = 7000;
-    const timer = setTimeout(newOrder, duration);
+    const timer = setTimeout(newOrder, SESSION_EXPIRY_TIMEOUT);
     return () => clearTimeout(timer);
   }, []);
 
@@ -35,10 +36,6 @@ export const Success: React.VFC = () => {
   const smallTextProps = {
     size: "large",
     textAlign: "center",
-  };
-
-  const buttonProps = {
-    onClick: newOrder,
   };
 
   return (
@@ -59,7 +56,7 @@ export const Success: React.VFC = () => {
           any questions, please email
           <a href="mailto:hello@cheapreats.com"> hello@cheapreats.com</a>
         </SmallText>
-        <StyledButton primary {...buttonProps}>
+        <StyledButton primary onClick={newOrder}>
           Start New Order
         </StyledButton>
       </StyledCard>

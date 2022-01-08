@@ -7,16 +7,11 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "@cheapreats/react-ui";
 import styled from "styled-components";
+import { process } from "../index";
 
 interface CheckoutFormProps {
   orderId: string;
 }
-
-declare var process: {
-  env: {
-    BASE_URL: string;
-  };
-};
 
 export const CheckoutForm: React.VFC<CheckoutFormProps> = ({
   orderId,
@@ -36,7 +31,7 @@ export const CheckoutForm: React.VFC<CheckoutFormProps> = ({
       return;
     }
 
-    const successURL = process.env.BASE_URL + "/checkout?id=".concat(orderId);
+    const successURL = `${process.env.BASE_URL} /checkout?id= ${orderId}`;
 
     const result = await stripe.confirmPayment({
       elements,
