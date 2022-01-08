@@ -25,7 +25,6 @@ import {
   Microphone,
   ShoppingCart,
 } from "@styled-icons/fa-solid/";
-import { CustomTag } from "../components/CustomTag";
 import styled, { useTheme } from "styled-components";
 import { CartItem, SmartVoiceButton, Submit } from "../components";
 import SpeechRecognition, {
@@ -517,17 +516,18 @@ const Landing: NextPage = () => {
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
       tagComponents.push(
-        <StyledCustomTag
+        <StyledTag
           onClick={function () {
             setTagSelected(index);
             setTagsVisible(false);
             submitResponse(tag);
           }}
+          iconVisible={false}
           isVisible={tagsVisible}
           isSelected={index == tagSelected}
         >
           {tag}
-        </StyledCustomTag>
+        </StyledTag>
       );
     });
     return tagComponents;
@@ -646,7 +646,7 @@ const FADEOUT_ANIMATION = `
   }
 `;
 
-const StyledCustomTag = styled(CustomTag)<{ isVisible: boolean, isSelected: boolean }>`
+const StyledTag = styled(Tag)<{ isVisible: boolean, isSelected: boolean }>`
   ${Mixins.transition(['visibility'])}
   ${({ isVisible, isSelected }): string => 
       isVisible ? `
@@ -713,9 +713,7 @@ const TagContainer = styled.div`
   ${Mixins.flex("row")};
   justify-content: space-between;
   width: 35%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 10px;
+  margin: auto auto 10px auto;
 `;
 
 const StyledSnowfall = styled(Snowfall)`
