@@ -101,13 +101,13 @@ const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<
     Array<React.ReactElement>
   >([]);
-  const [isWaiting, setIsWaiting] = useState<boolean>(false);
-  const [isBegan, setBegan] = useState<boolean>(false);
-  const [tagsVisible, setTagsVisible] = useState<boolean>(false);
-  const [tagSelected, setTagSelected] = useState<number>(-1);
-  const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0);
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isBegan, setBegan] = useState(false);
+  const [tagsVisible, setTagsVisible] = useState(false);
+  const [tagSelected, setTagSelected] = useState(-1);
+  const [price, setPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
@@ -228,8 +228,6 @@ const Landing: NextPage = () => {
       margin_right = "auto";
       icon = Robot;
     }
-
-    // console.log(highlightedString.listItemsBodies)
 
     if (highlightedString.isRight) {
       return (
@@ -484,7 +482,6 @@ const Landing: NextPage = () => {
       SpeechRecognition.startListening();
     } else {
       SpeechRecognition.stopListening();
-      // console.log(transcript);
 
       getResponse(transcript);
     }
@@ -512,7 +509,6 @@ const Landing: NextPage = () => {
   var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
 
   const displayTags = (tags: string[]) => {
-    console.log(tagSelected);
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
       tagComponents.push(
@@ -524,7 +520,7 @@ const Landing: NextPage = () => {
           }}
           iconVisible={false}
           isVisible={tagsVisible}
-          isSelected={index == tagSelected}
+          isSelected={index === tagSelected}
         >
           {tag}
         </StyledTag>
@@ -539,6 +535,9 @@ const Landing: NextPage = () => {
   const setFocusFalse = function () {
     setIsFocused(false);
   };
+
+  const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 
+  'List Orders', 'Done'];
 
   return (
     <>
@@ -592,8 +591,7 @@ const Landing: NextPage = () => {
                 </StyledFieldSet>
               </TopBox>
               <InputContainer>
-                <TagContainer>{displayTags(['Place Order', 'Cancel Order', 
-                'List Orders', 'Done'])}</TagContainer>
+                <TagContainer>{displayTags(SUGGESTED_RESPONSES)}</TagContainer>
                 <Submit onSubmit={submitResponse} />
               </InputContainer>
             </LandingPage>
