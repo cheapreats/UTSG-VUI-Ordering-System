@@ -7,19 +7,22 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 export const Success: React.VFC = () => {
-  const [orderId, setOrderId] = useState<string>("");
+  const [orderId, setOrderId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    const orderIdString: string = router.query.id as string;
-
-    if (!!router.query) {
-      setOrderId(orderIdString);
+    if (!!router.query.id) {
+      setOrderId(router.query.id as string);
     }
   }, [router.query]);
 
+  function newOrder() {
+    window.location.replace("/order");
+  }
+
   useEffect(() => {
-    const timer = setTimeout(() => window.location.replace("/order"), 7000);
+    const duration = 7000;
+    const timer = setTimeout(newOrder, duration);
     return () => clearTimeout(timer);
   }, []);
 
@@ -35,8 +38,7 @@ export const Success: React.VFC = () => {
   };
 
   const buttonProps = {
-    color: "red",
-    onClick: () => window.location.replace("/order"),
+    onClick: newOrder,
   };
 
   return (
@@ -70,16 +72,12 @@ export default Success;
 const StyledCard = styled(Card)`
   width: 60%;
   text-align: center;
-  margin-top: 10em;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 10em auto auto;
   postion: relative;
   padding: 3em;
 `;
 
 const StyledButton = styled(Button)`
-  margin-left: auto;
-  margin-right: auto;
+  margin: 1em auto auto;
   text-align: center;
-  margin-top: 1em;
 `;
