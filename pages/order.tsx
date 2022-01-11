@@ -6,18 +6,11 @@ import {
   SmallText,
   HighlightedText,
   HighlightedString,
-  ClickableSmallText,
-  ScrollableListContent,
-  VoiceButtonProps,
-  ButtonProps,
   Mixins,
-  BaseStyles,
-  TagGroup,
   Tag,
   Heading,
   Loading,
 } from "@cheapreats/react-ui";
-import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
 import React, { useEffect, useState, useRef } from "react";
 import {
   Robot,
@@ -26,12 +19,11 @@ import {
   ShoppingCart,
 } from "@styled-icons/fa-solid/";
 import styled, { useTheme } from "styled-components";
-import { CartItem, SmartVoiceButton, Submit } from "../components";
+import { SmartVoiceButton, Submit } from "../components";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import QRCode from "qrcode";
-import Theme from "@cheapreats/react-ui/dist/Themes/ThemeTemplate";
 import Snowfall from "react-snowfall";
 const axios = require("axios");
 
@@ -52,7 +44,6 @@ const apiKey =
 
 const mainFramePadding = "1rem";
 const iconSize = 50;
-const standardMarginSize = "10px";
 const noMarginSize = "0px";
 
 const VBArgs = {
@@ -96,6 +87,7 @@ const CheckoutQR = styled.img`
 
 const textMarginSize = "10px";
 let imgUrl;
+const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 'List Orders', 'Done']
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<
@@ -112,8 +104,10 @@ const Landing: NextPage = () => {
 
   const theme = useTheme();
 
-  //auto scroll to bottom
   const scrollRef = useRef<HTMLDivElement>(null);
+  /**
+   * Auto-scroll to bottom of theScrollingList window
+   */
   const scrollToBottom = () => {
     if (scrollRef && scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -148,6 +142,14 @@ const Landing: NextPage = () => {
     // setNumStrings(nextHighlightedStrings.length);
   };
 
+  /**
+   * Get arguments for HighlightedString
+   * @param {boolean} fromBot - True if bot response
+   * @param {string} text
+   * @param {undefined | Array<React.ReactElement} list - List of string variables
+   * @param {SpecialRange | undefined} specialRange - Identify range of elements to highlight
+   * @returns {HighlightedString}
+   */
   const highlightifyString = (
     fromBot: boolean,
     text: string,
@@ -157,9 +159,6 @@ const Landing: NextPage = () => {
     let txtAlign = "right";
     if (fromBot) {
       txtAlign = "left";
-      // text = 'Bot:\n' + text;
-    } else {
-      // text = 'You:\n' + text;
     }
 
     let margin_left = "auto";
@@ -171,10 +170,7 @@ const Landing: NextPage = () => {
       textColor = "black";
     }
 
-    let isSpecial = false;
-    if (list) {
-      isSpecial = true;
-    }
+    let isSpecial = list ? true : false;
 
     return {
       text: text,
@@ -268,6 +264,11 @@ const Landing: NextPage = () => {
     return <>{highlightedStrings}</>;
   };
 
+  /**
+   * Map string array to SmallText array
+   * @param {Array<string>} strings 
+   * @returns {Array<React.ReactElement>}}
+   */
   const smallTextifyList = (
     strings: Array<string>
   ): Array<React.ReactElement> => {
@@ -284,7 +285,10 @@ const Landing: NextPage = () => {
     setLoading(true);
   };
 
-  //parse the bot's response
+  /**
+   * Parse the bot's response
+   * @param {any} resData - response text
+   */
   const parseResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message") {
@@ -305,25 +309,28 @@ const Landing: NextPage = () => {
             varIndicatorStart + 1,
             varIndicatorEnd
           );
+
           if (targetVariable == "n") {
             res = res.replace("".concat("[", targetVariable, "]"), "\n");
             continue;
           } else {
             res = res.replace("".concat("[", targetVariable, "]"), "");
           }
-          if (targetVariable == "highlight") {
-            specialRange.begin = varIndicatorStart;
-            continue;
-          } else if (targetVariable == "\\highlight") {
-            specialRange.end = varIndicatorStart;
-            continue;
-          } else if (targetVariable == "main menu") {
-            // bot prints menu options
-            setTagsVisible(true);
-            continue;
-          } else if (targetVariable == "session reset") {
-            setPrice(0);
-            continue;
+
+          switch(targetVariable) {
+            case "highlight":
+              specialRange.begin = varIndicatorStart;
+              continue;
+            case "\\highlight":
+              specialRange.end = varIndicatorStart;
+              continue;
+            case "main menu":
+              // bot prints menu options
+              setTagsVisible(true);
+              continue;
+            case "session reset":
+              setPrice(0);
+              continue;
           }
 
           const response = await axios({
@@ -394,6 +401,7 @@ const Landing: NextPage = () => {
             }
             list = smallTextifyList(response.data.variables[targetVariable]);
           }
+
         }
 
         if (specialRange.end == 0) {
@@ -408,7 +416,9 @@ const Landing: NextPage = () => {
     }
   };
 
-  //called to get the first bot message
+  /**
+   * Gets the first bot message
+   */
   const initVF = async () => {
     const reqBody = {
       request: {
@@ -434,7 +444,11 @@ const Landing: NextPage = () => {
     parseResponse(response.data);
   };
 
-  //get the bot's response to a request the user sent
+  /**
+   * Get the bot's response to a request the user sent
+   * @param {string} requestText - user's request                 
+   * @returns {boolean} False if no response.
+   */
   const getResponse = async (requestText: string) => {
     if (requestText === "") {
       return false;
@@ -443,7 +457,6 @@ const Landing: NextPage = () => {
       highlightifyString(false, requestText, undefined, undefined)
     );
 
-    //TODO: Use Voiceflow API
     const reqBody = {
       request: {
         type: "text",
@@ -464,7 +477,9 @@ const Landing: NextPage = () => {
 
   let synth: SpeechSynthesis | undefined = undefined;
 
-  //initialize the voiceflow session
+  /**
+   * initializes Voiceflow session
+   */
   useEffect(() => {
     if (!isBegan) {
       setBegan(true);
@@ -488,6 +503,10 @@ const Landing: NextPage = () => {
     setIsWaiting(!isWaiting);
   };
 
+  /**
+   * Voiceflow API speaks
+   * @param {string} text - voice prompt
+   */
   const speak = async (text: string) => {
     if (text != "") {
       const speakText = new SpeechSynthesisUtterance(text);
@@ -501,13 +520,20 @@ const Landing: NextPage = () => {
     }
   };
 
+  /**
+   * Handles onClick event for TagContainer components
+   * @param submission 
+   */
   const submitResponse = function (submission: string) {
-    if (synth) synth.cancel();
+    if (synth) synth.cancel(); // stops VoiceBot from talking
     getResponse(submission);
   };
 
-  var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
-
+  /**
+   * Map tags to StyledTag components
+   * @param {string[]} tags
+   * @returns {React.ReactElement[]}
+   */
   const displayTags = (tags: string[]) => {
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
@@ -535,9 +561,6 @@ const Landing: NextPage = () => {
   const setFocusFalse = function () {
     setIsFocused(false);
   };
-
-  const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 
-  'List Orders', 'Done'];
 
   return (
     <>
