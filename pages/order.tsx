@@ -23,7 +23,6 @@ import {
   Robot,
   User,
   Microphone,
-  DotCircle,
   ShoppingCart,
 } from "@styled-icons/fa-solid/";
 import styled, { useTheme } from "styled-components";
@@ -102,12 +101,13 @@ const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<
     Array<React.ReactElement>
   >([]);
-  const [isWaiting, setIsWaiting] = useState<boolean>(false);
-  const [isBegan, setBegan] = useState<boolean>(false);
-  const [resOptions, setResOptions] = useState<Array<string>>([]);
-  const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0);
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isBegan, setBegan] = useState(false);
+  const [tagsVisible, setTagsVisible] = useState(false);
+  const [tagSelected, setTagSelected] = useState(-1);
+  const [price, setPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
@@ -229,8 +229,6 @@ const Landing: NextPage = () => {
       icon = Robot;
     }
 
-    // console.log(highlightedString.listItemsBodies)
-
     if (highlightedString.isRight) {
       return (
         <TextBubbleContainer fromBot={true}>
@@ -313,7 +311,6 @@ const Landing: NextPage = () => {
           } else {
             res = res.replace("".concat("[", targetVariable, "]"), "");
           }
-
           if (targetVariable == "highlight") {
             specialRange.begin = varIndicatorStart;
             continue;
@@ -322,7 +319,7 @@ const Landing: NextPage = () => {
             continue;
           } else if (targetVariable == "main menu") {
             // bot prints menu options
-            setResOptions(start_tags);
+            setTagsVisible(true);
             continue;
           } else if (targetVariable == "session reset") {
             setPrice(0);
@@ -445,7 +442,6 @@ const Landing: NextPage = () => {
     addHighlightedString(
       highlightifyString(false, requestText, undefined, undefined)
     );
-    setResOptions([]);
 
     //TODO: Use Voiceflow API
     const reqBody = {
@@ -486,7 +482,6 @@ const Landing: NextPage = () => {
       SpeechRecognition.startListening();
     } else {
       SpeechRecognition.stopListening();
-      // console.log(transcript);
 
       getResponse(transcript);
     }
@@ -516,20 +511,16 @@ const Landing: NextPage = () => {
   const displayTags = (tags: string[]) => {
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
-      const tagPieceProps = { position: "middle" };
-      if (index === 0) {
-        tagPieceProps.position = "left";
-      }
-      if (index === tags.length - 1) {
-        tagPieceProps.position = "right";
-      }
       tagComponents.push(
         <StyledTag
-          icon={DotCircle}
           onClick={function () {
+            setTagSelected(index);
+            setTagsVisible(false);
             submitResponse(tag);
           }}
-          {...tagPieceProps}
+          iconBehaviour="None"
+          isVisible={tagsVisible}
+          isSelected={index === tagSelected}
         >
           {tag}
         </StyledTag>
@@ -544,6 +535,9 @@ const Landing: NextPage = () => {
   const setFocusFalse = function () {
     setIsFocused(false);
   };
+
+  const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 
+  'List Orders', 'Done'];
 
   return (
     <>
@@ -579,7 +573,6 @@ const Landing: NextPage = () => {
               <TopBox>
                 <ScrollingList
                   ref={scrollRef}
-                  optionsAvailable={resOptions.length > 0}
                 >
                   {displayHighlightedText()}
                   {/* <HighlightedText labels={highlightedStrings}>
@@ -598,7 +591,7 @@ const Landing: NextPage = () => {
                 </StyledFieldSet>
               </TopBox>
               <InputContainer>
-                <TagContainer>{displayTags(resOptions)}</TagContainer>
+                <TagContainer>{displayTags(SUGGESTED_RESPONSES)}</TagContainer>
                 <Submit onSubmit={submitResponse} />
               </InputContainer>
             </LandingPage>
@@ -608,6 +601,66 @@ const Landing: NextPage = () => {
     </>
   );
 };
+
+const SLIDEFADEIN_ANIMATION = `
+  animation: slidefadein 0.5s linear 1;
+  @keyframes slidefadein {
+    from {
+      opacity: 0;
+      transform: translate3d(0,-100%,0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0,0,0);
+    }
+
+  }
+`;
+
+const SLIDEFADEOUT_ANIMATION = `
+  animation: slidefadeout 0.5s linear 1;
+  @keyframes slidefadeout {
+    from {
+      opacity: 1;
+      transform: translate3d(0,0,0);
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(0,100%,0);
+    }
+
+  }
+`;
+
+const FADEOUT_ANIMATION = `
+  animation: fadeout 0.5s linear 1;
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+`;
+
+const StyledTag = styled(Tag)<{ isVisible: boolean, isSelected: boolean }>`
+  ${Mixins.transition(['visibility'])}
+  ${({ theme }): string => `
+    background-color: ${theme.colors['background']};
+  `}
+
+  ${({ isVisible, isSelected }): string => 
+      isVisible ? `
+          ${SLIDEFADEIN_ANIMATION}
+          visibility: visible;
+      ` : `
+          ${isSelected ? FADEOUT_ANIMATION 
+              : SLIDEFADEOUT_ANIMATION}
+          visibility: hidden;
+      `
+  }
+`;
 
 const PriceDisplayHeading = styled(Heading)`
   width: 45%;
@@ -658,29 +711,11 @@ const Popup = styled.div<{ isHovered: boolean }>`
       : ``}
 `;
 
-const StyledTag = styled(Tag)<{ position: string }>`
-  border-radius: ${({ position }) => {
-    if (position === "left") {
-      return "999px 0px 0px 999px";
-    }
-    if (position === "right") {
-      return "0px 999px 999px 0px";
-    }
-    if (position === "middle") {
-      return "0px";
-    }
-    return "";
-  }};
-
-  ${({ theme }): string => `
-    background-color: ${theme.colors["background"]};
-  `}
-  margin-bottom: 10px;
-`;
-
 const TagContainer = styled.div`
   ${Mixins.flex("row")};
-  ${Mixins.flex("center")};
+  justify-content: space-between;
+  width: 35%;
+  margin: auto auto 10px auto;
 `;
 
 const StyledSnowfall = styled(Snowfall)`
@@ -713,22 +748,13 @@ const TopBox = styled.div`
   height: calc(100% - 25px);
 `;
 
-const ScrollingList = styled.div<{ optionsAvailable?: boolean }>`
+const ScrollingList = styled.div`
   ${Mixins.scroll}
   &::-webkit-scrollbar {
     background-color: rgba(0, 0, 0, 0);
   }
   ${Mixins.transition(["height"])}
-  ${({ optionsAvailable }): string =>
-    optionsAvailable
-      ? `
-    animation: grow 0.18s ease-out 1;
-    height: calc(100% - 275px);
-  `
-      : `
-    animation: shrink 0.18s ease-in 1;
-    height: calc(100% - 235px);
-  `}
+  height: calc(100% - 275px);
   background: rgba(238, 238, 238, 0.25);
   padding: 5px;
   padding-top: 25px;
@@ -736,23 +762,6 @@ const ScrollingList = styled.div<{ optionsAvailable?: boolean }>`
   overflow-y: scroll;
   overflow-wrap: break-word;
 
-  @keyframes grow {
-    from {
-      height: calc(100% - 235px);
-    }
-    to {
-      height: calc(100% - 275px);
-    }
-  }
-
-  @keyframes shrink {
-    from {
-      height: calc(100% - 275px);
-    }
-    to {
-      height: calc(100% - 235px);
-    }
-  }
 `;
 
 const LandingPageContainer = styled.div`
