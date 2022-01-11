@@ -41,11 +41,17 @@ const Home: NextPage = () => {
   const scrollRef = useRef();
   const theme = useTheme();
 
+  /**
+   * Loads the Order page
+   */
   const redirectToOrder = () => {
     setLoading(true);
     window.location.replace("/order");
   };
 
+  /**
+   * Scroll to "Learn More" section
+   */
   const scrollOnClick = () => {
     if (scrollRef && scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });

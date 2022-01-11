@@ -225,39 +225,22 @@ const Landing: NextPage = () => {
       icon = Robot;
     }
 
-    if (highlightedString.isRight) {
-      return (
-        <TextBubbleContainer fromBot={true}>
-          <StyledImg fromBot={true} as={icon} imgSize={iconSize} />
-          <TextBubble fromBot={true}>
-            <p
-              style={{
-                marginLeft: textMarginSize,
-                marginRight: textMarginSize,
-              }}
-            >
-              <HighlightedText labels={[highlightedString]} />
-            </p>
-          </TextBubble>
-        </TextBubbleContainer>
-      );
-    } else {
-      return (
-        <TextBubbleContainer fromBot={false}>
-          <TextBubble fromBot={false}>
-            <p
-              style={{
-                marginLeft: textMarginSize,
-                marginRight: textMarginSize,
-              }}
-            >
-              <HighlightedText labels={[highlightedString]} />
-            </p>
-          </TextBubble>
-          <StyledImg fromBot={false} as={icon} imgSize={iconSize} />
-        </TextBubbleContainer>
-      );
-    }
+    return (
+      <TextBubbleContainer fromBot={!!highlightedString.isRight}>
+        <StyledImg fromBot={!!highlightedString.isRight} as={icon} imgSize={iconSize} />
+        <TextBubble fromBot={!!highlightedString.isRight}>
+          <p
+            style={{
+              marginLeft: textMarginSize,
+              marginRight: textMarginSize,
+            }}
+          >
+            <HighlightedText labels={[highlightedString]} />
+          </p>
+        </TextBubble>
+      </TextBubbleContainer>
+    );
+    
   };
 
   const displayHighlightedText = (): React.ReactElement => {
