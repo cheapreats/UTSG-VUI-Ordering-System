@@ -518,7 +518,7 @@ const Landing: NextPage = () => {
             setTagsVisible(false);
             submitResponse(tag);
           }}
-          iconVisible={false}
+          iconBehaviour="None"
           isVisible={tagsVisible}
           isSelected={index === tagSelected}
         >
@@ -646,6 +646,10 @@ const FADEOUT_ANIMATION = `
 
 const StyledTag = styled(Tag)<{ isVisible: boolean, isSelected: boolean }>`
   ${Mixins.transition(['visibility'])}
+  ${({ theme }): string => `
+    background-color: ${theme.colors['background']};
+  `}
+
   ${({ isVisible, isSelected }): string => 
       isVisible ? `
           ${SLIDEFADEIN_ANIMATION}
