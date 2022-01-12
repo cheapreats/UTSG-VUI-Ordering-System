@@ -1,15 +1,15 @@
-import type { NextPage } from "next";
-import styled, { useTheme } from "styled-components";
+import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
 import {
   Button,
-  Heading,
   CarouselTestimonial,
+  Heading,
   Loading,
 } from "@cheapreats/react-ui";
-import { BagFill, InfoCircleFill } from "@styled-icons/bootstrap";
+import type { NextPage } from "next";
 import { Parallax } from "react-parallax";
-import { useRef, useState } from "react";
 import Snowfall from "react-snowfall";
+import styled, { useTheme } from "styled-components";
+import { useRef, useState } from "react";
 
 const LOGO =
   "https://www.cheapreats.com/static/90939a6dc8dacea8e44d046c72521a1b/16c7d/logo.png";
@@ -37,7 +37,7 @@ const PARALLAXCONF = {
 };
 
 const Home: NextPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef();
   const theme = useTheme();
 
@@ -45,12 +45,12 @@ const Home: NextPage = () => {
    * Loads the Order page
    */
   const redirectToOrder = () => {
-    setLoading(true);
+    setIsLoading(true);
     window.location.replace("/order");
   };
 
   /**
-   * Scroll to "Learn More" section
+   * Scroll to Ref attribute
    */
   const scrollOnClick = () => {
     if (scrollRef && scrollRef.current) {
@@ -60,13 +60,13 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      {loading && (
+      {isLoading && (
         <>
           <Loading loading={true} />
           <Snowfall color={theme.colors.primary} />
         </>
       )}
-      {!loading && (
+      {!isLoading && (
         <>
           <Parallax
             blur={PARALLAXCONF.blur}
@@ -75,20 +75,15 @@ const Home: NextPage = () => {
           >
             <Section>
               <Container>
-                <Heading
-                  margin="0 0 10px 0"
-                  color="black"
+                <StyledHeading
                   type="h1"
                   size="3rem"
-                  textAlign="center"
                   bold={true}
-                  lineHeight="1.3"
-                  inlineStyle="max-width: 100%; z-index: 1"
                 >
                   Welcome to the CheaprEats
                   <br />
                   Voice Ordering System
-                </Heading>
+                </StyledHeading>
                 <Button
                   onClick={redirectToOrder}
                   icon={BagFill}
@@ -185,6 +180,15 @@ const Subsection = styled.div<{ bgCol?: string }>`
   width: 50%;
   height: 100vh;
   background-color: ${(p) => p.bgCol || "#FFF"};
+`;
+
+const StyledHeading = styled(Heading)`
+  margin: 0 0 10px 0;
+  color: black;
+  text-align: center;
+  line-height: 1.3;
+  max-width: 100%; 
+  z-index: 1;
 `;
 
 export default Home;

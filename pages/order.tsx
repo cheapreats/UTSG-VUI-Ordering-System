@@ -1,30 +1,31 @@
-import type { NextPage } from "next";
 import {
-  QRScan,
-  QRScanProps,
   Button,
-  SmallText,
-  HighlightedText,
   HighlightedString,
-  Mixins,
-  Tag,
+  HighlightedText,
   Heading,
   Loading,
+  Mixins,
+  QRScan,
+  QRScanProps,
+  SmallText,
+  Tag,
 } from "@cheapreats/react-ui";
-import React, { useEffect, useState, useRef } from "react";
 import {
-  Robot,
-  User,
   Microphone,
+  Robot,
   ShoppingCart,
+  User,
 } from "@styled-icons/fa-solid/";
-import styled, { useTheme } from "styled-components";
+import type { NextPage } from "next";
+import QRCode from "qrcode";
+import React, { useEffect, useState, useRef } from "react";
 import { SmartVoiceButton, Submit } from "../components";
+import Snowfall from "react-snowfall";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import QRCode from "qrcode";
-import Snowfall from "react-snowfall";
+import styled, { useTheme } from "styled-components";
+
 const axios = require("axios");
 
 interface IOrder {
@@ -88,6 +89,7 @@ const CheckoutQR = styled.img`
 const textMarginSize = "10px";
 let imgUrl;
 const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 'List Orders', 'Done']
+const priceDisplayText = "Hey there User!";
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<
@@ -100,7 +102,7 @@ const Landing: NextPage = () => {
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const theme = useTheme();
 
@@ -144,27 +146,27 @@ const Landing: NextPage = () => {
 
   /**
    * Get arguments for HighlightedString
-   * @param {boolean} fromBot - True if bot response
+   * @param {boolean} isFromBot - True if bot response
    * @param {string} text
    * @param {undefined | Array<React.ReactElement} list - List of string variables
    * @param {SpecialRange | undefined} specialRange - Identify range of elements to highlight
    * @returns {HighlightedString}
    */
   const highlightifyString = (
-    fromBot: boolean,
+    isFromBot: boolean,
     text: string,
     list: undefined | Array<React.ReactElement>,
     specialRange: SpecialRange | undefined
   ): HighlightedString => {
     let txtAlign = "right";
-    if (fromBot) {
+    if (isFromBot) {
       txtAlign = "left";
     }
 
     let margin_left = "auto";
     let margin_right = "0";
     var textColor = "white";
-    if (fromBot) {
+    if (isFromBot) {
       margin_left = "0";
       margin_right = "auto";
       textColor = "black";
@@ -177,7 +179,7 @@ const Landing: NextPage = () => {
       isSpecial: isSpecial,
       specialRange: specialRange,
       listItemsBodies: list,
-      isRight: fromBot,
+      isRight: isFromBot,
       listProps: {
         // dropdownButton: <div/>,
         beginOpen: true,
@@ -205,8 +207,8 @@ const Landing: NextPage = () => {
 
   const createQRBubble = (QRFrame: React.ReactElement): React.ReactElement => {
     return (
-      <TextBubbleContainer fromBot={true}>
-        <TextBubble fromBot={true}>{QRFrame}</TextBubble>
+      <TextBubbleContainer isFromBot={true}>
+        <TextBubble isFromBot={true}>{QRFrame}</TextBubble>
       </TextBubbleContainer>
     );
   };
@@ -226,21 +228,16 @@ const Landing: NextPage = () => {
     }
 
     return (
-      <TextBubbleContainer fromBot={!!highlightedString.isRight}>
-        <StyledImg fromBot={!!highlightedString.isRight} as={icon} imgSize={iconSize} />
-        <TextBubble fromBot={!!highlightedString.isRight}>
-          <p
-            style={{
-              marginLeft: textMarginSize,
-              marginRight: textMarginSize,
-            }}
-          >
+      <TextBubbleContainer isFromBot={!!highlightedString.isRight}>
+        <StyledImg isFromBot={!!highlightedString.isRight} as={icon} imgSize={iconSize} />
+        <TextBubble isFromBot={!!highlightedString.isRight}>
+          <StyledP textMarginSize={textMarginSize}>
             <HighlightedText labels={[highlightedString]} />
-          </p>
+          </StyledP>
         </TextBubble>
       </TextBubbleContainer>
     );
-    
+
   };
 
   const displayHighlightedText = (): React.ReactElement => {
@@ -265,14 +262,14 @@ const Landing: NextPage = () => {
   };
 
   const handleQRClick = () => {
-    setLoading(true);
+    setIsLoading(true);
   };
 
   /**
    * Parse the bot's response
    * @param {any} resData - response text
    */
-  const parseResponse = async (resData: any) => {
+  const parseBotResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message") {
         let res: string = item.payload.message;
@@ -424,7 +421,7 @@ const Landing: NextPage = () => {
       data: reqBody,
     });
 
-    parseResponse(response.data);
+    parseBotResponse(response.data);
   };
 
   /**
@@ -455,7 +452,7 @@ const Landing: NextPage = () => {
       data: reqBody,
     });
 
-    parseResponse(response.data);
+    parseBotResponse(response.data);
   };
 
   let synth: SpeechSynthesis | undefined = undefined;
@@ -547,13 +544,13 @@ const Landing: NextPage = () => {
 
   return (
     <>
-      {loading && (
+      {isLoading && (
         <>
           <Loading loading={true} />
           <Snowfall color={theme.colors.primary} />
         </>
       )}
-      {!loading && (
+      {!isLoading && (
         <LandingPageContainer>
           <LandingPageContent>
             <StyledSnowfall />
@@ -562,7 +559,7 @@ const Landing: NextPage = () => {
               onMouseLeave={setFocusFalse}
             >
               <Popup isHovered={isFocused}>
-                <PriceDisplayHeading>Hey there User!</PriceDisplayHeading>
+                <PriceDisplayHeading>{priceDisplayText}</PriceDisplayHeading>
                 <PriceDisplayButton
                   onClick={undefined}
                   icon={ShoppingCart}
@@ -807,15 +804,15 @@ const LandingPage = styled.div`
 `;
 
 const container_margin = "10px";
-const TextBubbleContainer = styled.div<{ fromBot: boolean }>`
+const TextBubbleContainer = styled.div<{ isFromBot: boolean }>`
   ${Mixins.flex("row")};
   ${Mixins.flex("center")};
   position: relative;
 
   maxwidth: "80%";
   width: "fit-content";
-  ${({ fromBot }): string =>
-    fromBot
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     justify-content: left;
     margin-left: 0px;
@@ -846,9 +843,9 @@ const TextBubbleContainer = styled.div<{ fromBot: boolean }>`
 `;
 
 const bubble_margin = "50px";
-const TextBubble = styled.div<{ fromBot: boolean }>`
-  ${({ fromBot }): string =>
-    fromBot
+const TextBubble = styled.div<{ isFromBot: boolean }>`
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     margin-left: ${bubble_margin};
     margin-right: 0px;
@@ -858,8 +855,8 @@ const TextBubble = styled.div<{ fromBot: boolean }>`
     margin-right: ${bubble_margin};
   `}
   border: 1.5px solid rgba(0,0,0,0.1);
-  ${({ theme, fromBot }): string =>
-    fromBot
+  ${({ theme, isFromBot }): string =>
+    isFromBot
       ? `
     border-radius: 20px 20px 20px 5px;
     background-color:  ${theme.colors["background"]};
@@ -872,9 +869,13 @@ const TextBubble = styled.div<{ fromBot: boolean }>`
   margin-bottom: 10px;  
 `;
 
-const StyledImg = styled.svg<{ imgSize: number; fromBot: boolean }>`
-  ${({ fromBot }): string =>
-    fromBot
+const StyledP = styled.p<{ textMarginSize: string }>`
+  margin: 0 ${textMarginSize} 0 ${textMarginSize};
+`;
+
+const StyledImg = styled.svg<{ imgSize: number; isFromBot: boolean }>`
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     bottom: calc(0px);
     left: calc(0px);
