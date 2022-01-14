@@ -50,7 +50,7 @@ const Home: NextPage = () => {
   };
 
   /**
-   * Scroll to Ref attribute
+   * Scrolls to 'Learn More' section of the homepage
    */
   const scrollOnClick = () => {
     if (scrollRef && scrollRef.current) {
@@ -58,8 +58,20 @@ const Home: NextPage = () => {
     }
   };
 
-  return (
-    <div>
+  if (isLoading) {
+    return (
+      <div>
+        {isLoading && (
+          <>
+            <Loading loading={true} />
+            <Snowfall color={theme.colors.primary} />
+          </>
+        )}
+      </div>
+    );
+  } else {
+    return (
+      <div>
       {isLoading && (
         <>
           <Loading loading={true} />
@@ -136,7 +148,8 @@ const Home: NextPage = () => {
         </>
       )}
     </div>
-  );
+    );
+  }
 };
 
 const Img = styled.img`

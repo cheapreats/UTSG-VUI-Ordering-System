@@ -108,7 +108,7 @@ const Landing: NextPage = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   /**
-   * Auto-scroll to bottom of theScrollingList window
+   * Scrolls to bottom of the chat history for the most recent messages
    */
   const scrollToBottom = () => {
     if (scrollRef && scrollRef.current) {
