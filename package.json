@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cheapreats/react-ui": "file:cheapreats-react-ui-2.4.39.tgz",
+    "@cheapreats/react-ui": "file:cheapreats-react-ui-2.4.53.tgz",
     "@cheapreats/ts-sdk": "^1.13.26",
     "@stripe/react-stripe-js": "^1.6.0",
     "@stripe/stripe-js": "^1.21.1",
