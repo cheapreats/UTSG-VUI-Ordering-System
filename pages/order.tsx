@@ -36,6 +36,17 @@ interface IOrder {
   price: number;
 }
 
+const enum BotResponsesEnum {
+  HIGHLIGHTEDTEXT_START = 'highlight',
+  HIGHLIGHTEDTEXT_END = '\\highlight',
+  MAIN_MENU = 'main menu',
+  SESSION_RESET = 'session reset',
+  NEWLINE = 'n',
+  CART_ID = 'cartID',
+  FOOD_ITEM_PRICE = 'foodItemPrice',
+  ORDERS = 'orders'
+};
+
 var userID = "2";
 const ver = "61a45af9bb4f63000637acef";
 const VFBaseURL = "https://general-runtime.voiceflow.com";
@@ -216,21 +227,17 @@ const Landing: NextPage = () => {
   const createTextBubble = (
     highlightedString: HighlightedString
   ): React.ReactElement => {
-    let container_margin_left = "auto";
-    let margin_left = "auto";
-    let margin_right = noMarginSize;
     var icon = User;
-    if (highlightedString.isRight) {
-      // highlighted string appears on right of icon
-      margin_left = noMarginSize;
-      margin_right = "auto";
+    const { isRight } = highlightedString;
+  
+    if (isRight) {
       icon = Robot;
     }
 
     return (
-      <TextBubbleContainer isFromBot={!!highlightedString.isRight}>
-        <StyledImg isFromBot={!!highlightedString.isRight} as={icon} imgSize={iconSize} />
-        <TextBubble isFromBot={!!highlightedString.isRight}>
+      <TextBubbleContainer isFromBot={!!isRight}>
+        <StyledImg isFromBot={!!isRight} as={icon} imgSize={iconSize} />
+        <TextBubble isFromBot={!!isRight}>
           <StyledP textMarginSize={textMarginSize}>
             <HighlightedText labels={[highlightedString]} />
           </StyledP>
@@ -244,6 +251,10 @@ const Landing: NextPage = () => {
     return <>{highlightedStrings}</>;
   };
 
+  const formatSmallTextChildren = (index: number, children: string): string => {
+    return "".concat((index + 1).toString(), ". ", children);
+  }
+
   /**
    * Map string array to SmallText array
    * @param {Array<string>} strings 
@@ -255,7 +266,7 @@ const Landing: NextPage = () => {
     let smallTexts: Array<React.ReactElement> = [];
     for (let i = 0; i < strings.length; i++) {
       smallTexts.push(
-        <SmallText>{"".concat((i + 1).toString(), ". ", strings[i])}</SmallText>
+        <SmallText>{formatSmallTextChildren(i, strings[i])}</SmallText>
       );
     }
     return smallTexts;
@@ -290,7 +301,7 @@ const Landing: NextPage = () => {
             varIndicatorEnd
           );
 
-          if (targetVariable == "n") {
+          if (targetVariable == BotResponsesEnum.NEWLINE) {
             res = res.replace("".concat("[", targetVariable, "]"), "\n");
             continue;
           } else {
@@ -298,17 +309,17 @@ const Landing: NextPage = () => {
           }
 
           switch(targetVariable) {
-            case "highlight":
+            case BotResponsesEnum.HIGHLIGHTEDTEXT_START:
               specialRange.begin = varIndicatorStart;
               continue;
-            case "\\highlight":
+            case BotResponsesEnum.HIGHLIGHTEDTEXT_END:
               specialRange.end = varIndicatorStart;
               continue;
-            case "main menu":
+            case BotResponsesEnum.MAIN_MENU:
               // bot prints menu options
               setTagsVisible(true);
               continue;
-            case "session reset":
+            case BotResponsesEnum.SESSION_RESET:
               setPrice(0);
               continue;
           }
@@ -320,7 +331,7 @@ const Landing: NextPage = () => {
             headers: { Authorization: apiKey },
           });
 
-          if (targetVariable == "cartID") {
+          if (targetVariable == BotResponsesEnum.CART_ID) {
             let cartID = response.data.variables[targetVariable];
 
             //window.location.replace("http://localhost:8080/checkout?id=".concat(cartID));
@@ -356,14 +367,14 @@ const Landing: NextPage = () => {
                 );
               }
             });
-          } else if (targetVariable == "foodItemPrice") {
+          } else if (targetVariable == BotResponsesEnum.FOOD_ITEM_PRICE) {
             // update order summary
             setPrice(
               (prevPrice) => prevPrice + response.data.variables[targetVariable]
             );
             setQuantity((prevQuantity) => prevQuantity + 1);
             continue;
-          } else if (targetVariable == "orders") {
+          } else if (targetVariable == BotResponsesEnum.SESSION_RESET) {
             let sumPrices = 0;
             let orders: IOrder[] = response.data.variables[targetVariable];
             for (var i = 0; i < orders.length; i++) {
@@ -429,7 +440,7 @@ const Landing: NextPage = () => {
    * @param {string} requestText - user's request                 
    * @returns {boolean} False if no response.
    */
-  const getResponse = async (requestText: string) => {
+  const getBotResponse = async (requestText: string) => {
     if (requestText === "") {
       return false;
     }
@@ -478,7 +489,7 @@ const Landing: NextPage = () => {
     } else {
       SpeechRecognition.stopListening();
 
-      getResponse(transcript);
+      getBotResponse(transcript);
     }
     setIsWaiting(!isWaiting);
   };
@@ -504,9 +515,9 @@ const Landing: NextPage = () => {
    * Handles onClick event for TagContainer components
    * @param submission 
    */
-  const submitResponse = function (submission: string) {
+  const submitUserRequest = function (submission: string) {
     if (synth) synth.cancel(); // stops VoiceBot from talking
-    getResponse(submission);
+    getBotResponse(submission);
   };
 
   /**
@@ -522,7 +533,7 @@ const Landing: NextPage = () => {
           onClick={function () {
             setTagSelected(index);
             setTagsVisible(false);
-            submitResponse(tag);
+            submitUserRequest(tag);
           }}
           iconBehaviour="None"
           isVisible={tagsVisible}
@@ -541,6 +552,10 @@ const Landing: NextPage = () => {
   const setFocusFalse = function () {
     setIsFocused(false);
   };
+
+  const formatPriceDisplayButton = (quantity: string, price: string): string => {
+    return quantity + "|$" + price;
+  }
 
   return (
     <>
@@ -567,7 +582,7 @@ const Landing: NextPage = () => {
                   iconSize="25px"
                   margin="5px"
                 >
-                  {quantity.toString() + "|$" + price.toString()}
+                  {formatPriceDisplayButton(quantity.toString(), price.toString())}
                 </PriceDisplayButton>
                 {/* <PriceDisplay icon={ShoppingCart}>{price}</PriceDisplay> */}
               </Popup>
@@ -595,7 +610,7 @@ const Landing: NextPage = () => {
               </TopBox>
               <InputContainer>
                 <TagContainer>{displayTags(SUGGESTED_RESPONSES)}</TagContainer>
-                <Submit onSubmit={submitResponse} />
+                <Submit onSubmit={submitUserRequest} />
               </InputContainer>
             </LandingPage>
           </LandingPageContent>
