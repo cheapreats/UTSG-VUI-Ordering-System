@@ -1,38 +1,31 @@
-import type { NextPage } from "next";
 import {
-  QRScan,
-  QRScanProps,
   Button,
-  SmallText,
-  HighlightedText,
   HighlightedString,
-  ClickableSmallText,
-  ScrollableListContent,
-  VoiceButtonProps,
-  ButtonProps,
-  Mixins,
-  BaseStyles,
-  TagGroup,
-  Tag,
+  HighlightedText,
   Heading,
   Loading,
+  Mixins,
+  QRScan,
+  QRScanProps,
+  SmallText,
+  Tag,
 } from "@cheapreats/react-ui";
-import { NavigationBar, INavigationBarProps } from "@cheapreats/react-ui";
-import React, { useEffect, useState, useRef } from "react";
 import {
-  Robot,
-  User,
   Microphone,
+  Robot,
   ShoppingCart,
+  User,
 } from "@styled-icons/fa-solid/";
-import styled, { useTheme } from "styled-components";
-import { CartItem, SmartVoiceButton, Submit } from "../components";
+import type { NextPage } from "next";
+import QRCode from "qrcode";
+import React, { useEffect, useState, useRef } from "react";
+import { SmartVoiceButton, Submit } from "../components";
+import Snowfall from "react-snowfall";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import QRCode from "qrcode";
-import Theme from "@cheapreats/react-ui/dist/Themes/ThemeTemplate";
-import Snowfall from "react-snowfall";
+import styled, { useTheme } from "styled-components";
+
 const axios = require("axios");
 
 interface IOrder {
@@ -52,7 +45,6 @@ const apiKey =
 
 const mainFramePadding = "1rem";
 const iconSize = 50;
-const standardMarginSize = "10px";
 const noMarginSize = "0px";
 
 const VBArgs = {
@@ -96,6 +88,8 @@ const CheckoutQR = styled.img`
 
 const textMarginSize = "10px";
 let imgUrl;
+const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 'List Orders', 'Done']
+const priceDisplayText = "Hey there User!";
 
 const Landing: NextPage = () => {
   const [highlightedStrings, setHighlightedStrings] = useState<
@@ -108,12 +102,14 @@ const Landing: NextPage = () => {
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const theme = useTheme();
 
-  //auto scroll to bottom
   const scrollRef = useRef<HTMLDivElement>(null);
+  /**
+   * Scrolls to bottom of the chat history for the most recent messages
+   */
   const scrollToBottom = () => {
     if (scrollRef && scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -148,40 +144,42 @@ const Landing: NextPage = () => {
     // setNumStrings(nextHighlightedStrings.length);
   };
 
+  /**
+   * Get arguments for HighlightedString
+   * @param {boolean} isFromBot - True if bot response
+   * @param {string} text
+   * @param {undefined | Array<React.ReactElement} list - List of string variables
+   * @param {SpecialRange | undefined} specialRange - Identify range of elements to highlight
+   * @returns {HighlightedString}
+   */
   const highlightifyString = (
-    fromBot: boolean,
+    isFromBot: boolean,
     text: string,
     list: undefined | Array<React.ReactElement>,
     specialRange: SpecialRange | undefined
   ): HighlightedString => {
     let txtAlign = "right";
-    if (fromBot) {
+    if (isFromBot) {
       txtAlign = "left";
-      // text = 'Bot:\n' + text;
-    } else {
-      // text = 'You:\n' + text;
     }
 
     let margin_left = "auto";
     let margin_right = "0";
     var textColor = "white";
-    if (fromBot) {
+    if (isFromBot) {
       margin_left = "0";
       margin_right = "auto";
       textColor = "black";
     }
 
-    let isSpecial = false;
-    if (list) {
-      isSpecial = true;
-    }
+    let isSpecial = list ? true : false;
 
     return {
       text: text,
       isSpecial: isSpecial,
       specialRange: specialRange,
       listItemsBodies: list,
-      isRight: fromBot,
+      isRight: isFromBot,
       listProps: {
         // dropdownButton: <div/>,
         beginOpen: true,
@@ -209,8 +207,8 @@ const Landing: NextPage = () => {
 
   const createQRBubble = (QRFrame: React.ReactElement): React.ReactElement => {
     return (
-      <TextBubbleContainer fromBot={true}>
-        <TextBubble fromBot={true}>{QRFrame}</TextBubble>
+      <TextBubbleContainer isFromBot={true}>
+        <TextBubble isFromBot={true}>{QRFrame}</TextBubble>
       </TextBubbleContainer>
     );
   };
@@ -229,45 +227,28 @@ const Landing: NextPage = () => {
       icon = Robot;
     }
 
-    if (highlightedString.isRight) {
-      return (
-        <TextBubbleContainer fromBot={true}>
-          <StyledImg fromBot={true} as={icon} imgSize={iconSize} />
-          <TextBubble fromBot={true}>
-            <p
-              style={{
-                marginLeft: textMarginSize,
-                marginRight: textMarginSize,
-              }}
-            >
-              <HighlightedText labels={[highlightedString]} />
-            </p>
-          </TextBubble>
-        </TextBubbleContainer>
-      );
-    } else {
-      return (
-        <TextBubbleContainer fromBot={false}>
-          <TextBubble fromBot={false}>
-            <p
-              style={{
-                marginLeft: textMarginSize,
-                marginRight: textMarginSize,
-              }}
-            >
-              <HighlightedText labels={[highlightedString]} />
-            </p>
-          </TextBubble>
-          <StyledImg fromBot={false} as={icon} imgSize={iconSize} />
-        </TextBubbleContainer>
-      );
-    }
+    return (
+      <TextBubbleContainer isFromBot={!!highlightedString.isRight}>
+        <StyledImg isFromBot={!!highlightedString.isRight} as={icon} imgSize={iconSize} />
+        <TextBubble isFromBot={!!highlightedString.isRight}>
+          <StyledP textMarginSize={textMarginSize}>
+            <HighlightedText labels={[highlightedString]} />
+          </StyledP>
+        </TextBubble>
+      </TextBubbleContainer>
+    );
+
   };
 
   const displayHighlightedText = (): React.ReactElement => {
     return <>{highlightedStrings}</>;
   };
 
+  /**
+   * Map string array to SmallText array
+   * @param {Array<string>} strings 
+   * @returns {Array<React.ReactElement>}}
+   */
   const smallTextifyList = (
     strings: Array<string>
   ): Array<React.ReactElement> => {
@@ -281,11 +262,14 @@ const Landing: NextPage = () => {
   };
 
   const handleQRClick = () => {
-    setLoading(true);
+    setIsLoading(true);
   };
 
-  //parse the bot's response
-  const parseResponse = async (resData: any) => {
+  /**
+   * Parse the bot's response
+   * @param {any} resData - response text
+   */
+  const parseBotResponse = async (resData: any) => {
     for (var item of resData) {
       if (item.type == "speak" && item.payload.type == "message") {
         let res: string = item.payload.message;
@@ -305,25 +289,28 @@ const Landing: NextPage = () => {
             varIndicatorStart + 1,
             varIndicatorEnd
           );
+
           if (targetVariable == "n") {
             res = res.replace("".concat("[", targetVariable, "]"), "\n");
             continue;
           } else {
             res = res.replace("".concat("[", targetVariable, "]"), "");
           }
-          if (targetVariable == "highlight") {
-            specialRange.begin = varIndicatorStart;
-            continue;
-          } else if (targetVariable == "\\highlight") {
-            specialRange.end = varIndicatorStart;
-            continue;
-          } else if (targetVariable == "main menu") {
-            // bot prints menu options
-            setTagsVisible(true);
-            continue;
-          } else if (targetVariable == "session reset") {
-            setPrice(0);
-            continue;
+
+          switch(targetVariable) {
+            case "highlight":
+              specialRange.begin = varIndicatorStart;
+              continue;
+            case "\\highlight":
+              specialRange.end = varIndicatorStart;
+              continue;
+            case "main menu":
+              // bot prints menu options
+              setTagsVisible(true);
+              continue;
+            case "session reset":
+              setPrice(0);
+              continue;
           }
 
           const response = await axios({
@@ -394,6 +381,7 @@ const Landing: NextPage = () => {
             }
             list = smallTextifyList(response.data.variables[targetVariable]);
           }
+
         }
 
         if (specialRange.end == 0) {
@@ -408,7 +396,9 @@ const Landing: NextPage = () => {
     }
   };
 
-  //called to get the first bot message
+  /**
+   * Gets the first bot message
+   */
   const initVF = async () => {
     const reqBody = {
       request: {
@@ -431,10 +421,14 @@ const Landing: NextPage = () => {
       data: reqBody,
     });
 
-    parseResponse(response.data);
+    parseBotResponse(response.data);
   };
 
-  //get the bot's response to a request the user sent
+  /**
+   * Get the bot's response to a request the user sent
+   * @param {string} requestText - user's request                 
+   * @returns {boolean} False if no response.
+   */
   const getResponse = async (requestText: string) => {
     if (requestText === "") {
       return false;
@@ -443,7 +437,6 @@ const Landing: NextPage = () => {
       highlightifyString(false, requestText, undefined, undefined)
     );
 
-    //TODO: Use Voiceflow API
     const reqBody = {
       request: {
         type: "text",
@@ -459,12 +452,14 @@ const Landing: NextPage = () => {
       data: reqBody,
     });
 
-    parseResponse(response.data);
+    parseBotResponse(response.data);
   };
 
   let synth: SpeechSynthesis | undefined = undefined;
 
-  //initialize the voiceflow session
+  /**
+   * initializes Voiceflow session
+   */
   useEffect(() => {
     if (!isBegan) {
       setBegan(true);
@@ -488,6 +483,10 @@ const Landing: NextPage = () => {
     setIsWaiting(!isWaiting);
   };
 
+  /**
+   * Voiceflow API speaks
+   * @param {string} text - voice prompt
+   */
   const speak = async (text: string) => {
     if (text != "") {
       const speakText = new SpeechSynthesisUtterance(text);
@@ -501,13 +500,20 @@ const Landing: NextPage = () => {
     }
   };
 
+  /**
+   * Handles onClick event for TagContainer components
+   * @param submission 
+   */
   const submitResponse = function (submission: string) {
-    if (synth) synth.cancel();
+    if (synth) synth.cancel(); // stops VoiceBot from talking
     getResponse(submission);
   };
 
-  var start_tags = ["Place Order", "Cancel Order", "List Orders", "Done"];
-
+  /**
+   * Map tags to StyledTag components
+   * @param {string[]} tags
+   * @returns {React.ReactElement[]}
+   */
   const displayTags = (tags: string[]) => {
     var tagComponents: React.ReactElement[] = [];
     tags.map((tag, index) => {
@@ -536,18 +542,15 @@ const Landing: NextPage = () => {
     setIsFocused(false);
   };
 
-  const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 
-  'List Orders', 'Done'];
-
   return (
     <>
-      {loading && (
+      {isLoading && (
         <>
           <Loading loading={true} />
           <Snowfall color={theme.colors.primary} />
         </>
       )}
-      {!loading && (
+      {!isLoading && (
         <LandingPageContainer>
           <LandingPageContent>
             <StyledSnowfall />
@@ -556,7 +559,7 @@ const Landing: NextPage = () => {
               onMouseLeave={setFocusFalse}
             >
               <Popup isHovered={isFocused}>
-                <PriceDisplayHeading>Hey there User!</PriceDisplayHeading>
+                <PriceDisplayHeading>{priceDisplayText}</PriceDisplayHeading>
                 <PriceDisplayButton
                   onClick={undefined}
                   icon={ShoppingCart}
@@ -801,15 +804,15 @@ const LandingPage = styled.div`
 `;
 
 const container_margin = "10px";
-const TextBubbleContainer = styled.div<{ fromBot: boolean }>`
+const TextBubbleContainer = styled.div<{ isFromBot: boolean }>`
   ${Mixins.flex("row")};
   ${Mixins.flex("center")};
   position: relative;
 
   maxwidth: "80%";
   width: "fit-content";
-  ${({ fromBot }): string =>
-    fromBot
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     justify-content: left;
     margin-left: 0px;
@@ -840,9 +843,9 @@ const TextBubbleContainer = styled.div<{ fromBot: boolean }>`
 `;
 
 const bubble_margin = "50px";
-const TextBubble = styled.div<{ fromBot: boolean }>`
-  ${({ fromBot }): string =>
-    fromBot
+const TextBubble = styled.div<{ isFromBot: boolean }>`
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     margin-left: ${bubble_margin};
     margin-right: 0px;
@@ -852,8 +855,8 @@ const TextBubble = styled.div<{ fromBot: boolean }>`
     margin-right: ${bubble_margin};
   `}
   border: 1.5px solid rgba(0,0,0,0.1);
-  ${({ theme, fromBot }): string =>
-    fromBot
+  ${({ theme, isFromBot }): string =>
+    isFromBot
       ? `
     border-radius: 20px 20px 20px 5px;
     background-color:  ${theme.colors["background"]};
@@ -866,9 +869,13 @@ const TextBubble = styled.div<{ fromBot: boolean }>`
   margin-bottom: 10px;  
 `;
 
-const StyledImg = styled.svg<{ imgSize: number; fromBot: boolean }>`
-  ${({ fromBot }): string =>
-    fromBot
+const StyledP = styled.p<{ textMarginSize: string }>`
+  margin: 0 ${textMarginSize} 0 ${textMarginSize};
+`;
+
+const StyledImg = styled.svg<{ imgSize: number; isFromBot: boolean }>`
+  ${({ isFromBot }): string =>
+    isFromBot
       ? `
     bottom: calc(0px);
     left: calc(0px);
