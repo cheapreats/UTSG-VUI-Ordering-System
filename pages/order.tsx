@@ -9,9 +9,6 @@ import {
   QRScanProps,
   SmallText,
   Tag,
-  TextLayoutProps,
-  IDropDownProps,
-  HighlightedTextProps,
 } from "@cheapreats/react-ui";
 import {
   Microphone,
