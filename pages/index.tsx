@@ -75,30 +75,26 @@ const Home: NextPage = () => {
             <Container>
               <StyledHeading
                 type="h1"
-                size="3rem"
-                bold={true}
               >
                 Welcome to the CheaprEats
                 <br />
                 Voice Ordering System
               </StyledHeading>
-              <Button
+              <StyledButton
                 onClick={redirectToOrder}
                 icon={BagFill}
                 primary={true}
                 iconSize="20px"
-                margin="5px"
               >
                 Start Ordering
-              </Button>
-              <Button
+              </StyledButton>
+              <StyledButton
                 onClick={scrollOnClick}
                 icon={InfoCircleFill}
                 iconSize="20px"
-                margin="5px"
               >
                 Learn More
-              </Button>
+              </StyledButton>
             </Container>
           </Section>
           <Snowfall color={theme.colors.primary} />
@@ -108,22 +104,21 @@ const Home: NextPage = () => {
             <Img src={LOGO} />
           </Subsection>
           <Subsection>
-            <Heading type="h1" color="black" bold={true}>
+            <StyledSectionHeading>
               How it works
-            </Heading>
+            </StyledSectionHeading>
             <h1 ref={scrollRef}></h1>
             <CarouselTestimonial
               {...CAROUSELCONF}
             />
-            <Button
+            <StyledButton
               onClick={redirectToOrder}
               icon={BagFill}
               iconSize="20px"
-              margin="5px"
               primary={true}
             >
               Start Ordering
-            </Button>
+            </StyledButton>
           </Subsection>
         </Section>
     </div>
@@ -174,13 +169,24 @@ const Subsection = styled.div<{ bgCol?: string }>`
   background-color: ${(p) => p.bgCol || "#FFF"};
 `;
 
+const StyledButton = styled(Button)`
+  margin: 5px;
+`;
+
 const StyledHeading = styled(Heading)`
   margin: 0 0 10px 0;
   color: black;
+  font-size: 3rem;
+  font-weight: bold;
   text-align: center;
   line-height: 1.3;
   max-width: 100%; 
   z-index: 1;
+`;
+
+const StyledSectionHeading = styled(Heading)`
+  color: black;
+  font-weight: bold;
 `;
 
 export default Home;

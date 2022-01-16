@@ -9,6 +9,9 @@ import {
   QRScanProps,
   SmallText,
   Tag,
+  TextLayoutProps,
+  IDropDownProps,
+  HighlightedTextProps,
 } from "@cheapreats/react-ui";
 import {
   Microphone,
@@ -36,6 +39,18 @@ interface IOrder {
   price: number;
 }
 
+/**
+ * Bot Response Variables
+ * 
+ * HIGHLIGHTEDTEXT_START - beginning of list of HighlightedText
+ * HIGHLIGHTEDTEXT_END - ending of list of HighlightedText
+ * MAIN_MENU - displays user order options
+ * SESSIONS_RESET - resets total order price
+ * NEWLINE - detects new line in list of text to display
+ * CART_ID - VoiceFlow has current cartID
+ * FOOD_ITEM_PRICE - VoiceFlow has current foodItemPrice
+ * ORDERS - displays cart items
+ */
 const enum BotResponsesEnum {
   HIGHLIGHTEDTEXT_START = 'highlight',
   HIGHLIGHTEDTEXT_END = '\\highlight',
@@ -169,25 +184,10 @@ const Landing: NextPage = () => {
     list: undefined | Array<React.ReactElement>,
     specialRange: SpecialRange | undefined
   ): HighlightedString => {
-    let txtAlign = "right";
-    if (isFromBot) {
-      txtAlign = "left";
-    }
-
-    let margin_left = "auto";
-    let margin_right = "0";
-    var textColor = "white";
-    if (isFromBot) {
-      margin_left = "0";
-      margin_right = "auto";
-      textColor = "black";
-    }
-
-    let isSpecial = list ? true : false;
 
     return {
       text: text,
-      isSpecial: isSpecial,
+      isSpecial: list ? true : false,
       specialRange: specialRange,
       listItemsBodies: list,
       isRight: isFromBot,
@@ -196,25 +196,50 @@ const Landing: NextPage = () => {
         beginOpen: true,
         right: false,
         dropdownWidth: "90%",
-        style: {
-          left: "1px",
-          marginLeft: textMarginSize,
-          marginRight: textMarginSize,
-        },
+        style: returnStyling(isFromBot, 'listProps'),
       },
       textProps: {
-        textAlign: txtAlign,
         type: "div",
-        color: textColor,
-        style: {
-          whiteSpace: "pre-line",
-          // width: '80%',
-          marginLeft: "2px",
-          marginRight: "2px",
-        },
+        style: returnStyling(isFromBot, "textProps"),
       },
     };
   };
+
+   /**
+   * Return textProps and listProps styling depending on sender
+   * @param {boolean} isFromBot 
+   * @param {'listProps' | 'textProps'}} propName 
+   * @returns {React.CSSProperties}
+   */
+    const returnStyling = (isFromBot: boolean, propName: 'listProps' | 'textProps'): React.CSSProperties => {
+      let textAlign: "left" | "right" = "right";
+      let textColor = "white";
+      if (isFromBot) {
+        textAlign = "left";
+        textColor = "black";
+      }
+      switch (propName) {
+        case "listProps":
+          return ({
+              'left': "1px",
+              'marginLeft': textMarginSize,
+              'marginRight': textMarginSize,
+          });
+        case "textProps":
+          return (
+            {
+              'textAlign': textAlign,
+              'color': textColor,
+              'whiteSpace': "pre-line",
+              // width: '80%',
+              'marginLeft': "2px",
+              'marginRight': "2px",
+            }
+          );
+        default:
+          return ({});
+      }
+    }
 
   const createQRBubble = (QRFrame: React.ReactElement): React.ReactElement => {
     return (
@@ -554,7 +579,7 @@ const Landing: NextPage = () => {
   };
 
   const formatPriceDisplayButton = (quantity: string, price: string): string => {
-    return quantity + "|$" + price;
+    return `${quantity} | $${price}`;
   }
 
   return (
