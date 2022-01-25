@@ -18,16 +18,16 @@ const IMAGE =
 const ROTDEGREE = -4;
 
 const CAROUSELCONF = {
-  title: "",
-  image: "",
+  carouselTitle: "",
+  carouselImage: "",
   reviews: [
     { testimony: "Follow the instructions of the chat bot", reviewer: "" },
     { testimony: "Order with your voice or text", reviewer: "" },
     { testimony: "Scan the QR code to pay", reviewer: "" },
   ],
-  autoPlay: true,
-  interval: 5000,
-  loop: true,
+  isAutoplaying: true,
+  carouselInterval: 5000,
+  isLooping: true,
 };
 
 const PARALLAXCONF = {
@@ -61,92 +61,66 @@ const Home: NextPage = () => {
   if (isLoading) {
     return (
       <div>
-        {isLoading && (
-          <>
-            <Loading loading={true} />
-            <Snowfall color={theme.colors.primary} />
-          </>
-        )}
+        <Loading loading={true} />
+        <Snowfall color={theme.colors.primary} />
       </div>
     );
   } else {
     return (
       <div>
-      {isLoading && (
-        <>
-          <Loading loading={true} />
-          <Snowfall color={theme.colors.primary} />
-        </>
-      )}
-      {!isLoading && (
-        <>
-          <Parallax
-            blur={PARALLAXCONF.blur}
-            bgImage={PARALLAXCONF.bgImage}
-            strength={PARALLAXCONF.strength}
-          >
-            <Section>
-              <Container>
-                <StyledHeading
-                  type="h1"
-                  size="3rem"
-                  bold={true}
-                >
-                  Welcome to the CheaprEats
-                  <br />
-                  Voice Ordering System
-                </StyledHeading>
-                <Button
-                  onClick={redirectToOrder}
-                  icon={BagFill}
-                  primary={true}
-                  iconSize="20px"
-                  margin="5px"
-                >
-                  Start Ordering
-                </Button>
-                <Button
-                  onClick={scrollOnClick}
-                  icon={InfoCircleFill}
-                  iconSize="20px"
-                  margin="5px"
-                >
-                  Learn More
-                </Button>
-              </Container>
-            </Section>
-            <Snowfall color={theme.colors.primary} />
-          </Parallax>
+        <Parallax
+          {...PARALLAXCONF}
+        >
           <Section>
-            <Subsection bgCol={theme.colors.primary}>
-              <Img src={LOGO} />
-            </Subsection>
-            <Subsection>
-              <Heading type="h1" color="black" bold={true}>
-                How it works
-              </Heading>
-              <h1 ref={scrollRef}></h1>
-              <CarouselTestimonial
-                carouselTitle={CAROUSELCONF.title}
-                carouselImage={CAROUSELCONF.image}
-                reviews={CAROUSELCONF.reviews}
-                isAutoplaying={CAROUSELCONF.autoPlay}
-                carouselInterval={CAROUSELCONF.interval}
-                isLooping={CAROUSELCONF.loop}
-              />
-              <Button
+            <Container>
+              <StyledHeading
+                type="h1"
+              >
+                Welcome to the CheaprEats
+                <br />
+                Voice Ordering System
+              </StyledHeading>
+              <StyledButton
                 onClick={redirectToOrder}
                 icon={BagFill}
-                iconSize="20px"
-                margin="5px"
                 primary={true}
+                iconSize="20px"
               >
                 Start Ordering
-              </Button>
-            </Subsection>
+              </StyledButton>
+              <StyledButton
+                onClick={scrollOnClick}
+                icon={InfoCircleFill}
+                iconSize="20px"
+              >
+                Learn More
+              </StyledButton>
+            </Container>
           </Section>
-        </>
-      )}
+          <Snowfall color={theme.colors.primary} />
+        </Parallax>
+        <Section>
+          <Subsection bgCol={theme.colors.primary}>
+            <Img src={LOGO} />
+          </Subsection>
+          <Subsection>
+            <StyledSectionHeading>
+              How it works
+            </StyledSectionHeading>
+            <h1 ref={scrollRef}></h1>
+            <CarouselTestimonial
+              {...CAROUSELCONF}
+            />
+            <StyledButton
+              onClick={redirectToOrder}
+              icon={BagFill}
+              iconSize="20px"
+              primary={true}
+            >
+              Start Ordering
+            </StyledButton>
+          </Subsection>
+        </Section>
     </div>
     );
   }
@@ -195,13 +169,24 @@ const Subsection = styled.div<{ bgCol?: string }>`
   background-color: ${(p) => p.bgCol || "#FFF"};
 `;
 
+const StyledButton = styled(Button)`
+  margin: 5px;
+`;
+
 const StyledHeading = styled(Heading)`
   margin: 0 0 10px 0;
   color: black;
+  font-size: 3rem;
+  font-weight: bold;
   text-align: center;
   line-height: 1.3;
   max-width: 100%; 
   z-index: 1;
+`;
+
+const StyledSectionHeading = styled(Heading)`
+  color: black;
+  font-weight: bold;
 `;
 
 export default Home;
