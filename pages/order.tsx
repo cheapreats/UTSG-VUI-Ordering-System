@@ -197,6 +197,11 @@ const Landing: NextPage = () => {
       if (!list)
         return <StyledSmallText isFromBot={isFromBot} >{text}</StyledSmallText>
 
+      /**
+       * @property {boolean} beginOpen - toggles dropdown
+       * @property {boolean} right - positions dropdown on dropdownButton
+       * @property {string} dropdownWidth - sets width/max-width of dropdown
+       */
       const listProps: IDropdownProps = {
         beginOpen: true,
         right: false,
