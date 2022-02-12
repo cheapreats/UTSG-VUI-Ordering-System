@@ -1,14 +1,19 @@
 import {
   Button,
-  HighlightedString,
+  Dropdown,
+  DropdownItem,
   HighlightedText,
   Heading,
+  IDropdownProps,
+  ListProps,
   Loading,
   Mixins,
   QRScan,
   QRScanProps,
   SmallText,
+  SpecialText,
   Tag,
+  TextLayoutProps,
 } from "@cheapreats/react-ui";
 import {
   Microphone,
@@ -115,9 +120,7 @@ const SUGGESTED_RESPONSES = ['Place Order', 'Cancel Order', 'List Orders', 'Done
 const priceDisplayText = "Hey there User!";
 
 const Landing: NextPage = () => {
-  const [highlightedStrings, setHighlightedStrings] = useState<
-    Array<React.ReactElement>
-  >([]);
+  const [textBubbles, setTextBubbles] = useState<Array<React.ReactElement>>([]);
   const [isWaiting, setIsWaiting] = useState(false);
   const [isBegan, setBegan] = useState(false);
   const [tagsVisible, setTagsVisible] = useState(false);
@@ -144,10 +147,15 @@ const Landing: NextPage = () => {
 
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
-  const nextHighlightedStrings = highlightedStrings.slice();
+  //const nextHighlightedStrings = textBubbles.slice();
+  /**
+   * Adds an element to the chat 
+   * @param {React.ReactElement} newElement 
+   */
   const addElement = (newElement: React.ReactElement): void => {
-    nextHighlightedStrings.push(newElement);
-    setHighlightedStrings([...nextHighlightedStrings]);
+    //nextHighlightedStrings.push(newElement);
+    //setTextBubbles([...nextHighlightedStrings]);
+    setTextBubbles(textBubbles => [...textBubbles, newElement])
   };
 
   useEffect(() => {
@@ -157,86 +165,7 @@ const Landing: NextPage = () => {
         scrollToBottom();
       }, 400);
     }
-  }, [highlightedStrings]);
-
-  const addHighlightedString = (HString: HighlightedString): void => {
-    const chatBubble = createTextBubble(HString);
-
-    nextHighlightedStrings.push(chatBubble);
-    setHighlightedStrings([...nextHighlightedStrings]);
-    // setNumStrings(nextHighlightedStrings.length);
-  };
-
-  /**
-   * Get arguments for HighlightedString
-   * @param {boolean} isFromBot - True if bot response
-   * @param {string} text
-   * @param {undefined | Array<React.ReactElement} list - List of string variables
-   * @param {SpecialRange | undefined} specialRange - Identify range of elements to highlight
-   * @returns {HighlightedString}
-   */
-  const highlightifyString = (
-    isFromBot: boolean,
-    text: string,
-    list: undefined | Array<React.ReactElement>,
-    specialRange: SpecialRange | undefined
-  ): HighlightedString => {
-
-    return {
-      text: text,
-      isSpecial: list ? true : false,
-      specialRange: specialRange,
-      listItemsBodies: list,
-      isRight: isFromBot,
-      listProps: {
-        // dropdownButton: <div/>,
-        beginOpen: true,
-        right: false,
-        dropdownWidth: "90%",
-        style: returnStyling(isFromBot, 'listProps'),
-      },
-      textProps: {
-        type: "div",
-        style: returnStyling(isFromBot, "textProps"),
-      },
-    };
-  };
-
-   /**
-   * Return textProps and listProps styling depending on sender
-   * @param {boolean} isFromBot 
-   * @param {'listProps' | 'textProps'}} propName 
-   * @returns {React.CSSProperties}
-   */
-    const returnStyling = (isFromBot: boolean, propName: 'listProps' | 'textProps'): React.CSSProperties => {
-      let textAlign: "left" | "right" = "right";
-      let textColor = "white";
-      if (isFromBot) {
-        textAlign = "left";
-        textColor = "black";
-      }
-      switch (propName) {
-        case "listProps":
-          return ({
-              'left': "1px",
-              'marginLeft': textMarginSize,
-              'marginRight': textMarginSize,
-          });
-        case "textProps":
-          return (
-            {
-              'textAlign': textAlign,
-              'color': textColor,
-              'whiteSpace': "pre-line",
-              // width: '80%',
-              'marginLeft': "2px",
-              'marginRight': "2px",
-            }
-          );
-        default:
-          return ({});
-      }
-    }
+  }, [textBubbles]);
 
   const createQRBubble = (QRFrame: React.ReactElement): React.ReactElement => {
     return (
@@ -246,22 +175,82 @@ const Landing: NextPage = () => {
     );
   };
 
+  /**
+   * Creates a text bubble React element
+   * @param {boolean} isFromBot - True if from bot
+   * @param {string} text - children
+   * @param {undefined | Array<React.ReactElement>} list - Array of variables
+   * @param {SpecialRange} specialRange - identifies range of SpecialText
+   * @returns {React.ReactElement} 
+   */
   const createTextBubble = (
-    highlightedString: HighlightedString
+    isFromBot: boolean,
+    text: string,
+    list: undefined | Array<React.ReactElement>,
+    specialRange: SpecialRange | undefined
   ): React.ReactElement => {
-    var icon = User;
-    const { isRight } = highlightedString;
-  
-    if (isRight) {
-      icon = Robot;
+    const icon = isFromBot ? Robot : User;
+
+    const getTextBubble = (): React.ReactElement | null => {
+
+      // no variables
+      if (!list)
+        return <StyledSmallText isFromBot={isFromBot} >{text}</StyledSmallText>
+
+      /**
+       * @property {boolean} beginOpen - toggles dropdown
+       * @property {boolean} right - positions dropdown on dropdownButton
+       * @property {string} dropdownWidth - sets width/max-width of dropdown
+       */
+      const listProps: IDropdownProps = {
+        beginOpen: true,
+        right: false,
+        dropdownWidth: '90%',
+      }
+
+      const getDropdownButton = (): React.ReactElement => {
+        if (specialRange) {
+          return (
+            <StyledDiv>
+              <StyledSmallText isFromBot={isFromBot}>{`${text.substring(0, specialRange.begin - 1)} `}</StyledSmallText>
+              <SpecialText children={text.substring(specialRange.begin, specialRange.end + 1)} />
+              <StyledSmallText isFromBot={isFromBot}>{`${text.substring(specialRange.end + 1)} `}</StyledSmallText>
+            </StyledDiv>
+          );
+        }
+        else {
+          return <SpecialText children={text} />;
+        }
+      }
+
+      const getDropdownItems = (): React.ReactElement[] => {
+        return (
+          list.map((_, i) => (
+            <DropdownItem>
+                {list[i]}
+            </DropdownItem>
+          ))
+        );
+      }
+
+      return (
+        <StyledDropdown 
+          textMarginSize={textMarginSize} 
+          dropdownButton={getDropdownButton()}
+          {...listProps}
+        >
+          {getDropdownItems()}
+        </StyledDropdown>
+      );
+
     }
 
     return (
-      <TextBubbleContainer isFromBot={!!isRight}>
-        <StyledImg isFromBot={!!isRight} as={icon} imgSize={iconSize} />
-        <TextBubble isFromBot={!!isRight}>
+      <TextBubbleContainer isFromBot={isFromBot}>
+        <StyledImg isFromBot={isFromBot} as={icon} imgSize={iconSize} />
+        <TextBubble isFromBot={isFromBot}>
           <StyledP textMarginSize={textMarginSize}>
-            <HighlightedText labels={[highlightedString]} />
+            {getTextBubble()}
           </StyledP>
         </TextBubble>
       </TextBubbleContainer>
@@ -269,8 +258,8 @@ const Landing: NextPage = () => {
 
   };
 
-  const displayHighlightedText = (): React.ReactElement => {
-    return <>{highlightedStrings}</>;
+  const getTextBubbles = (): React.ReactElement => {
+    return <>{textBubbles}</>;
   };
 
   const formatSmallTextChildren = (index: number, children: string): string => {
@@ -422,7 +411,10 @@ const Landing: NextPage = () => {
         }
 
         speak(res);
-        addHighlightedString(highlightifyString(true, res, list, specialRange));
+        addElement(
+          createTextBubble(true, res, list, specialRange)
+        );
+        // addHighlightedString(highlightifyString(true, res, list, specialRange));
       } else {
         console.warn("Received an unexpected data type: Item - ".concat(item));
       }
@@ -466,8 +458,9 @@ const Landing: NextPage = () => {
     if (requestText === "") {
       return false;
     }
-    addHighlightedString(
-      highlightifyString(false, requestText, undefined, undefined)
+
+    addElement(
+      createTextBubble(false, requestText, undefined, undefined)
     );
 
     const reqBody = {
@@ -614,7 +607,7 @@ const Landing: NextPage = () => {
                 <ScrollingList
                   ref={scrollRef}
                 >
-                  {displayHighlightedText()}
+                  {getTextBubbles()}
                   {/* <HighlightedText labels={highlightedStrings}>
               </HighlightedText> */}
                 </ScrollingList>
@@ -641,6 +634,26 @@ const Landing: NextPage = () => {
     </>
   );
 };
+
+const StyledDiv = styled.div`
+  ${Mixins.flex('row')}
+`; 
+
+const StyledDropdown = styled(Dropdown)<{ textMarginSize: string }>`
+  ${({ textMarginSize }): string => `
+    left: 1px;
+    margin: 0 ${textMarginSize} 0 ${textMarginSize};
+  `}
+`;
+
+const StyledSmallText = styled(SmallText)<{ isFromBot: boolean}>`
+  ${({ isFromBot }): string => `
+    text-align: ${isFromBot ? 'left' : 'right'};
+    color: ${isFromBot ? 'black' : 'white'};
+  `}
+  white-space: pre-line;
+  margin: 0 2px 0 2px;
+`
 
 const SLIDEFADEIN_ANIMATION = `
   animation: slidefadein 0.5s linear 1;
@@ -908,6 +921,7 @@ const TextBubble = styled.div<{ isFromBot: boolean }>`
 
 const StyledP = styled.p<{ textMarginSize: string }>`
   margin: 0 ${textMarginSize} 0 ${textMarginSize};
+  padding: 10px 0 10px 0;
 `;
 
 const StyledImg = styled.svg<{ imgSize: number; isFromBot: boolean }>`
