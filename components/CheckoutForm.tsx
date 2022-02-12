@@ -7,8 +7,16 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "@cheapreats/react-ui";
 import styled from "styled-components";
+import { process } from "../index";
 
-export const CheckoutForm = (): React.ReactElement => {
+interface CheckoutFormProps {
+  orderId: string;
+}
+
+export const CheckoutForm: React.VFC<CheckoutFormProps> = ({
+  orderId,
+  ...props
+}) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -23,10 +31,12 @@ export const CheckoutForm = (): React.ReactElement => {
       return;
     }
 
+    const successURL = `${process.env.BASE_URL} /checkout?id= ${orderId}`;
+
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "http://localhost:8080/success",
+        return_url: successURL,
         // shipping: {Shipping Object}
       },
     });
